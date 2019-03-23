@@ -211,7 +211,8 @@ function ScatterSpeedDuration(trips) {
 		.text('Average Speed vs. Duration');
 
 	// Tooltip div
-	let tooltip = d3.select('#scatter1')
+	let tooltip = d3.select('body')
+		.append('g')
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
@@ -220,11 +221,11 @@ function ScatterSpeedDuration(trips) {
 	let tipMouseover = t => {
 		let html = 'Duration: ' + (t.duration / 60)
 					+ "<br/>"
-					+ 'Avg Speed: ' + t.avspeed;
+					+ 'Avg Speed: ' + t.avspeed.toFixed(2);
 
 		tooltip.html(html)
-			.style('left', (d3.event.pageX) + 'px')
-			.style('top', (d3.event.pageY) + 'px')
+			.style('left', (d3.event.pageX + 15) + 'px')
+			.style('top', (d3.event.pageY - 28) + 'px')
 			.transition()
 			.duration(200)
 			.style('opacity', 0.9)
@@ -316,7 +317,8 @@ function ScatterDistanceDuration(trips) {
 		.text('Distance vs. Duration');
 
 	// Tooltip div
-	let tooltip = d3.select('#scatter2')
+	let tooltip = d3.select('body')
+		.append('g')
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
@@ -325,7 +327,7 @@ function ScatterDistanceDuration(trips) {
 	let tipMouseover = t => {
 		let html = 'Duration: ' + (t.duration / 60)
 			+ "<br/>"
-			+ 'Distance: ' + t.distance / 1000;
+			+ 'Distance: ' + (t.distance / 1000).toFixed(2);
 
 		tooltip.html(html)
 			.style('left', (d3.event.pageX) + 'px')
@@ -421,16 +423,17 @@ function ScatterSpeedDistance(trips) {
 		.text('Avg Speed vs. Distance');
 
 	// Tooltip div
-	let tooltip = d3.select('#scatter3')
+	let tooltip = d3.select('body')
+		.append('g')
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
 
 	// Tooltip mouseover handler
 	let tipMouseover = t => {
-		let html = 'Distance: ' + (t.distance / 1000)
+		let html = 'Distance: ' + (t.distance / 1000).toFixed(2)
 			+ "<br/>"
-			+ 'Avg Speed: ' + t.avspeed;
+			+ 'Avg Speed: ' + t.avspeed.toFixed(2);
 
 		tooltip.html(html)
 			.style('left', (d3.event.pageX) + 'px')

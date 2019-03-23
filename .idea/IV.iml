@@ -10,5 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="d3.v3" level="application" />
+    <orderEntry type="library" name="d3.tip.v0.6.3" level="application" />
   </component>
 </module>

@@ -110,8 +110,9 @@ map.on('draw:created', function(e) {
 		DrawRS(result);
 
 		// TODO: Add D3 visualization functions, ex: drawGraph(result)
-		DrawScatter(result);
-		DrawBarGraph(result);
+		ScatterSpeedDuration(result);
+		ScatterDistanceDuration(result);
+		ScatterSpeedDistance(result);
 		});
 	}
 	
@@ -141,13 +142,13 @@ function DrawRS(trips) {
 	}		
 }
 
-function DrawScatter(trips) {
+function ScatterSpeedDuration(trips) {
 	// Initialize svg for plot
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#scatter").width() - margin.left - margin.right,
-		height = $('#scatter').height() - margin.bottom - margin.top;
+		width = $("#scatter1").width() - margin.left - margin.right,
+		height = $('#scatter1').height() - margin.bottom - margin.top;
 
-	var svg = d3.select("#scatter")
+	var svg = d3.select("#scatter1")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))
@@ -210,7 +211,7 @@ function DrawScatter(trips) {
 		.text('Average Speed vs. Duration');
 
 	// Tooltip div
-	let tooltip = d3.select('#scatter')
+	let tooltip = d3.select('#scatter1')
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
@@ -240,6 +241,216 @@ function DrawScatter(trips) {
 		.enter().append('circle')
 		.attr('class', 'dot')
 		.attr('cx', t => xScale(t.duration / 60))
+		.attr('cy', t => yScale(t.avspeed))
+		.attr('r', 4)
+		.on('mouseover', tipMouseover)
+		.on('mouseout', tipMouseout);
+}
+
+function ScatterDistanceDuration(trips) {
+	// Initialize svg for plot
+	var margin = {left: 40, top: 50, right: 20, bottom: 30},
+		width = $("#scatter2").width() - margin.left - margin.right,
+		height = $('#scatter2').height() - margin.bottom - margin.top;
+
+	var svg = d3.select("#scatter2")
+		.append('svg')
+		.attr("width", (width + margin.left + margin.right))
+		.attr("height", (height + margin.top + margin.bottom))
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+	// Generate x and y axis scales
+	const xScale = d3.scaleLinear()
+		.domain([0, d3.max(trips.map(t => t.duration / 60)) + 4])
+		.range([0, width]);
+
+	const yScale = d3.scaleLinear()
+		.domain([0, d3.max(trips.map(t => t.distance / 1000))]).nice()
+		.range([height, 0]);
+
+	const xAxis = d3.axisBottom(xScale);
+	const yAxis = d3.axisLeft(yScale);
+
+	// x axis path and ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	// y axis path + ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.call(yAxis);
+
+	// x axis label
+	svg.append('text')
+		.attr('class', 'label')
+		.attr('x', (width + margin.left + margin.right) / 2)
+		.attr('y', height + margin.bottom)
+		.attr('font-size', 14)
+		.attr('font-style', 'italic')
+		.style('text-anchor', 'end')
+		.text('Duration (min)');
+
+	// y axis label
+	svg.append('text')
+		.attr('class', 'label')
+		.attr('transform', 'rotate(-90)')
+		.attr('x', -(height / 2.5))
+		.attr('y', -(margin.left / 1.5))
+		.attr('font-size', 14)
+		.attr('font-style', 'italic')
+		.style('text-anchor', 'end')
+		.text('Distance');
+
+	// Main title
+	svg.append('text')
+		.attr('x', width / 2)
+		.attr('y', -margin.top / 2)
+		.attr('dy', '.35em')
+		.attr('font-size', 18)
+		.attr('font-weight', 'bold')
+		.attr('fill', 'black')
+		.style('text-anchor', 'middle')
+		.text('Distance vs. Duration');
+
+	// Tooltip div
+	let tooltip = d3.select('#scatter2')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 1.0);
+
+	// Tooltip mouseover handler
+	let tipMouseover = t => {
+		let html = 'Duration: ' + (t.duration / 60)
+			+ "<br/>"
+			+ 'Distance: ' + t.distance / 1000;
+
+		tooltip.html(html)
+			.style('left', (d3.event.pageX) + 'px')
+			.style('top', (d3.event.pageY) + 'px')
+			.transition()
+			.duration(200)
+			.style('opacity', 0.9)
+	};
+
+	let tipMouseout = () => {
+		tooltip.transition()
+			.duration(300)
+			.style('opacity', 0)
+	};
+
+	svg.selectAll('.dot')
+		.data(trips)
+		.enter().append('circle')
+		.attr('class', 'dot')
+		.attr('cx', t => xScale(t.duration / 60))
+		.attr('cy', t => yScale(t.distance / 1000))
+		.attr('r', 4)
+		.on('mouseover', tipMouseover)
+		.on('mouseout', tipMouseout);
+}
+
+function ScatterSpeedDistance(trips) {
+	// Initialize svg for plot
+	var margin = {left: 40, top: 50, right: 20, bottom: 30},
+		width = $("#scatter3").width() - margin.left - margin.right,
+		height = $('#scatter3').height() - margin.bottom - margin.top;
+
+	var svg = d3.select("#scatter3")
+		.append('svg')
+		.attr("width", (width + margin.left + margin.right))
+		.attr("height", (height + margin.top + margin.bottom))
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+	// Generate x and y axis scales
+	const xScale = d3.scaleLinear()
+		.domain([0, d3.max(trips.map(t => t.distance / 1000)) + 4])
+		.range([0, width]);
+
+	const yScale = d3.scaleLinear()
+		.domain([0, d3.max(trips.map(t => t.avspeed))]).nice()
+		.range([height, 0]);
+
+	const xAxis = d3.axisBottom(xScale);
+	const yAxis = d3.axisLeft(yScale);
+
+	// x axis path and ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	// y axis path + ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.call(yAxis);
+
+	// x axis label
+	svg.append('text')
+		.attr('class', 'label')
+		.attr('x', (width + margin.left + margin.right) / 2)
+		.attr('y', height + margin.bottom)
+		.attr('font-size', 14)
+		.attr('font-style', 'italic')
+		.style('text-anchor', 'end')
+		.text('Distance');
+
+	// y axis label
+	svg.append('text')
+		.attr('class', 'label')
+		.attr('transform', 'rotate(-90)')
+		.attr('x', -(height / 2.5))
+		.attr('y', -(margin.left / 1.5))
+		.attr('font-size', 14)
+		.attr('font-style', 'italic')
+		.style('text-anchor', 'end')
+		.text('Avg Speed');
+
+	// Main title
+	svg.append('text')
+		.attr('x', width / 2)
+		.attr('y', -margin.top / 2)
+		.attr('dy', '.35em')
+		.attr('font-size', 18)
+		.attr('font-weight', 'bold')
+		.attr('fill', 'black')
+		.style('text-anchor', 'middle')
+		.text('Avg Speed vs. Distance');
+
+	// Tooltip div
+	let tooltip = d3.select('#scatter3')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 1.0);
+
+	// Tooltip mouseover handler
+	let tipMouseover = t => {
+		let html = 'Distance: ' + (t.distance / 1000)
+			+ "<br/>"
+			+ 'Avg Speed: ' + t.avspeed;
+
+		tooltip.html(html)
+			.style('left', (d3.event.pageX) + 'px')
+			.style('top', (d3.event.pageY) + 'px')
+			.transition()
+			.duration(200)
+			.style('opacity', 0.9)
+	};
+
+	let tipMouseout = () => {
+		tooltip.transition()
+			.duration(300)
+			.style('opacity', 0)
+	};
+
+	svg.selectAll('.dot')
+		.data(trips)
+		.enter().append('circle')
+		.attr('class', 'dot')
+		.attr('cx', t => xScale(t.distance / 1000))
 		.attr('cy', t => yScale(t.avspeed))
 		.attr('r', 4)
 		.on('mouseover', tipMouseover)

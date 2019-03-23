@@ -155,31 +155,31 @@ function DrawScatter(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-	const maxTime = d3.max(trips.map(trip => {
-			let end = new Date(trip['endtime']);
-			let start = new Date(trip['starttime']);
-			let diff = end - start;
-			return Math.floor((diff/1000)/60);
-	}));
-
-	trips.forEach(t => {
+	let data = trips.map(t => {
 		let end = new Date(t['endtime']);
 		let start = new Date(t['starttime']);
 		let diff = end - start;
-		console.log(end);
-		console.log(start);
-		console.log(Math.floor((diff/1000)/60));
-		console.log(t['avspeed']);
+
+		return {
+			'duration': Math.floor((diff/1000)/60),
+			'avspeed': t['avspeed']
+		};
 	});
 
+	data.forEach((d, i) => {
+		console.log(i);
+		for(let key in d) {
+			console.log(key, d[key]);
+		}
+	});
 
 	const xScale = d3.scaleLinear()
-		.domain([0, maxTime+10])
+		.domain([0, d3.max(data.map(d => d.duration)) + 4])
 		.range([0, width]);
 
-	const maxSpeed = d3.max(trips.map(trip => trip['avspeed']));
+	// const maxSpeed = d3.max(trips.map(trip => trip['avspeed']));
 	const yScale = d3.scaleLinear()
-		.domain([0, maxSpeed]).nice()
+		.domain([0, d3.max(data.map(d => d.avspeed))]).nice()
 		.range([height, 0]);
 
 	const xAxis = d3.axisBottom(xScale);
@@ -218,7 +218,7 @@ function DrawScatter(trips) {
 		.style('text-anchor', 'end')
 		.text('Avg Speed');
 
-// Main title
+	// Main title
 	svg.append('text')
 		.attr('x', width / 2)
 		.attr('y', -margin.top / 2)
@@ -229,26 +229,37 @@ function DrawScatter(trips) {
 		.style('text-anchor', 'middle')
 		.text('Average Speed vs. Duration');
 
-	let tooltip = d3.select('#rightside').append('div')
+	// Tooltip div
+	let tooltip = d3.select('#rightside')
+		.append('div')
 		.attr('class', 'tooltip')
-		.style('opacity', 0);
+		.style('opacity', 1.0);
+
+	// Tooltip mouseover handler
+	let tipMouseover = d => {
+		let html = 'test';
+
+		tooltip.html(html)
+			.style('left', (d3.event.pageX + 15) + 'px')
+			.style('top', (d3.event.pageY - 28) + 'px')
+			.transition()
+			.duration(200)
+			.style('opacity', 0.9)
+	};
+
+	let tipMouseout = d => {
+		tooltip.transition()
+			.duration(300)
+			.style('opacity', 0)
+	};
 
 	svg.selectAll('.dot')
-		.data(trips)
+		.data(data)
 		.enter().append('circle')
 		.attr('class', 'dot')
-		.attr('cx', t => {
-			let end = new Date(t['endtime']);
-			let start = new Date(t['starttime']);
-			let diff = end - start;
-			return Math.floor((diff/1000)/60); // convert duration to minutes
-		})
-		.attr('cy', t => t['avspeed'])
+		.attr('cx', d => xScale(d.duration))
+		.attr('cy', d => yScale(d.avspeed))
 		.attr('r', 4)
-		// .on('mouseover', t => {
-		// 	tooltip.transition()
-		// 		.duration(200)
-		// 		.style('opacity', 0.9);
-		// 	tooltip.html('Duration:')
-		// })
+		.on('mouseover', tipMouseover)
+		.on('mouseout', tipMouseout);
 }

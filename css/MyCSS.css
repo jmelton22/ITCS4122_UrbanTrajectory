@@ -22,21 +22,17 @@ html {
 }
 
 .dot {
-	stroke: dimgrey;
+	stroke: black;
 	stroke-width: 2;
 	fill: dimgrey;
 	opacity: 0.7;
 }
 
 .tooltip {
-    position: absolute;
-    text-align: center;
-    width: 60px;
-    height: 28px;
-    padding: 2px;
-    font: 12px sans-serif;
-    background: snow;
-    border: 0;
-    border-radius: 8px;
-    pointer-events: none;
+	position: absolute;
+	font-size: 12px;
+	width:  auto;
+	height: auto;
+	pointer-events: none;
+	background-color: white;
 }

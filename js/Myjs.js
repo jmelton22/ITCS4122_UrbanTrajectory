@@ -63,43 +63,6 @@ var drawControl = new L.Control.Draw({
 });
 map.addControl(drawControl); // To add anything to map, add it to "drawControl"
 
-// Initialize svg for plots on right side
-var margin = {left: 50, top: 50, right: 20, bottom: 50},
-	width = $("#rightside").width() - margin.left - margin.right,
-	height = width*2/3;
-
-var svg = d3.select("#rightside")
-	.append('svg')
-	.attr("width", (width + margin.left + margin.right))
-	.attr("height", (height + margin.top + margin.bottom))
-	.append('g')
-	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-const xScale = d3.scaleLinear()
-	.range([0, width]);
-
-const yScale = d3.scaleLinear()
-	.range([height, 0]);
-
-const xAxis = d3.axisBottom(xScale);
-const yAxis = d3.axisLeft(yScale);
-
-// x axis path and ticks
-svg.append('g')
-	.attr('class', 'axis')
-	.attr('transform', 'translate(0, ' + height + ')')
-	.call(xAxis);
-
-// y axis path + ticks
-svg.append('g')
-	.attr('class', 'axis')
-	.call(yAxis);
-
-// svg.append('rect')
-// 	.attr('width', '100%')
-// 	.attr('height', '100%')
-// 	.style('fill', 'black');
-
 //*******************************************************************************************************************************************************
 //*****************************************************************************************************************************************
 // Index Road Network by Using R-Tree
@@ -145,7 +108,7 @@ map.on('draw:created', function(e) {
 			.then(function(d){var result = d.map(function(a) { return a.properties; });
 		console.log(result);		// Trip Info: avspeed, distance, duration, endtime, maxspeed, minspeed, starttime, streetnames, taxiid, tripid
 		DrawRS(result);
-
+		DrawScatter(result);
 		// TODO: Add D3 visualization functions, ex: drawGraph(result)
 
 		});
@@ -180,5 +143,83 @@ function DrawRS(trips) {
 }
 
 function DrawScatter(trips) {
+	for (let i = 0; i < trips.length; i++) {
+		console.log(trips[i]["avspeed"]);
+	}
+
+	// Initialize svg for plots on right side
+	var margin = {left: 40, top: 50, right: 20, bottom: 50},
+		width = $("#rightside").width() - margin.left - margin.right,
+		height = $('#rightside').height() / 2 - margin.bottom - margin.top;
+
+	var svg = d3.select("#rightside")
+		.append('svg')
+		.attr("width", (width + margin.left + margin.right))
+		.attr("height", (height + margin.top + margin.bottom))
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+	const xScale = d3.scaleLinear()
+		.domain([0, trips.length])
+		.range([0, width]);
+
+	const maxSpeed = d3.max(trips.map(trip => trip['avspeed']));
+	const yScale = d3.scaleLinear()
+		.domain([0, maxSpeed]).nice()
+		.range([height, 0]);
+
+	const xAxis = d3.axisBottom(xScale);
+	const yAxis = d3.axisLeft(yScale);
+
+	// x axis path and ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	// y axis path + ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.call(yAxis);
+
+	// x axis path and ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	// y axis path + ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.call(yAxis);
+
+	// y axis label
+	svg.append('text')
+		.attr('class', 'label')
+		.attr('transform', 'rotate(-90)')
+		.attr('x', -(height / 2.5))
+		.attr('y', -(margin.left / 1.5))
+		.attr('font-size', 14)
+		.attr('font-style', 'italic')
+		.style('text-anchor', 'end')
+		.text('Avg Speed');
+
+// Main title
+	svg.append('text')
+		.attr('x', width / 2)
+		.attr('y', -margin.top / 2)
+		.attr('dy', '.35em')
+		.attr('font-size', 18)
+		.attr('font-weight', 'bold')
+		.attr('fill', 'black')
+		.style('text-anchor', 'middle')
+		.text('Average Speed');
+
+	svg.selectAll('.dot')
+		.data(trips)
+		.enter().append('circle')
+		.attr('cx', t => t['starttime'])
+		.attr('cy', t => t['avspeed'])
+		.attr('r', 4)
 
 }

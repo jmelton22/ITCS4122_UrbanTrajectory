@@ -111,13 +111,11 @@ map.on('draw:created', function(e) {
 
 		// TODO: Add D3 visualization functions, ex: drawGraph(result)
 		DrawScatter(result);
-		DrawWordcloud(result);
+		DrawBarGraph(result);
 		});
 	}
 	
 	drawnItems.addLayer(layer);			//Add your Selection to Map
-
-	// TODO: Add layers to map (heatmap, start/end points)
 
 });
 //*****************************************************************************************************************************************
@@ -144,7 +142,7 @@ function DrawRS(trips) {
 }
 
 function DrawScatter(trips) {
-	// Initialize svg for plots on right side
+	// Initialize svg for plot
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
 		width = $("#scatter").width() - margin.left - margin.right,
 		height = $('#scatter').height() - margin.bottom - margin.top;
@@ -268,6 +266,68 @@ function DrawWordcloud(trips) {
 			streetCount[word]++;
 		}
 	}
+}
 
+function DrawBarGraph(trips) {
+	// Create array containing all street names
+	let streets = [];
+	trips.map(t => {
+		t.streetnames.forEach(st => {
+			streets.push(st);
+		})
+	});
+
+	// Create dictionary containing street counts
+	let streetCount = Object.create(null);
+	for(let i = 0; i < streets.length; i++) {
+		let word = streets[i];
+		if (!streetCount[word]) {
+			streetCount[word] = 1;
+		} else {
+			streetCount[word]++;
+		}
+	}
+
+	let items = Object.keys(streetCount).map(key => [key, streetCount[key]]);
+	items.sort((first, second) => second[1] - first[1]);
+
+	let data = items.slice(0, 20)
+
+	// Initialize svg for plot
+	var margin = {left: 40, top: 50, right: 20, bottom: 30},
+		width = $("#wordcloud").width() - margin.left - margin.right,
+		height = $('#wordcloud').height() - margin.bottom - margin.top;
+
+	var svg = d3.select("#wordcloud")
+		.append('svg')
+		.attr("width", (width + margin.left + margin.right))
+		.attr("height", (height + margin.top + margin.bottom))
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+	console.log(data[0][1]);
+
+	const xScale = d3.scaleBand()
+		.domain(data.map(d => d[0]))
+		.range([0, width])
+		.padding(0.1);
+
+	const yScale = d3.scaleLinear()
+		.domain([0, d3.max(data, d => d[1])]).nice()
+		.range([height, 0]);
+
+	const xAxis = d3.axisBottom(xScale);
+	const yAxis = d3.axisLeft(yScale);
+
+	// x axis path and ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	// y axis path + ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.call(yAxis);
 
 }

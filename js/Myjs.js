@@ -144,7 +144,7 @@ function DrawRS(trips) {
 
 function DrawScatter(trips) {
 	// Initialize svg for plots on right side
-	var margin = {left: 40, top: 50, right: 20, bottom: 20},
+	var margin = {left: 40, top: 50, right: 20, bottom: 30},
 		width = $("#rightside").width() - margin.left - margin.right,
 		height = $('#rightside').height() / 3 - margin.bottom - margin.top;
 
@@ -155,6 +155,7 @@ function DrawScatter(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+	// Subset out duration and avg speed of taxi trips
 	let data = trips.map(t => {
 		let end = new Date(t['endtime']);
 		let start = new Date(t['starttime']);
@@ -173,11 +174,11 @@ function DrawScatter(trips) {
 		}
 	});
 
+	// Generate x and y axis scales
 	const xScale = d3.scaleLinear()
 		.domain([0, d3.max(data.map(d => d.duration)) + 4])
 		.range([0, width]);
 
-	// const maxSpeed = d3.max(trips.map(trip => trip['avspeed']));
 	const yScale = d3.scaleLinear()
 		.domain([0, d3.max(data.map(d => d.avspeed))]).nice()
 		.range([height, 0]);
@@ -196,16 +197,14 @@ function DrawScatter(trips) {
 		.attr('class', 'axis')
 		.call(yAxis);
 
-	// x axis path and ticks
-	svg.append('g')
-		.attr('class', 'axis')
-		.attr('transform', 'translate(0, ' + height + ')')
-		.call(xAxis);
-
-	// y axis path + ticks
-	svg.append('g')
-		.attr('class', 'axis')
-		.call(yAxis);
+	svg.append('text')
+		.attr('class', 'label')
+		.attr('x', (width + margin.left + margin.right) / 2)
+		.attr('y', height + margin.bottom)
+		.attr('font-size', 14)
+		.attr('font-style', 'italic')
+		.style('text-anchor', 'end')
+		.text('Duration (min)');
 
 	// y axis label
 	svg.append('text')

@@ -143,14 +143,10 @@ function DrawRS(trips) {
 }
 
 function DrawScatter(trips) {
-	for (let i = 0; i < trips.length; i++) {
-		console.log(trips[i]["avspeed"]);
-	}
-
 	// Initialize svg for plots on right side
-	var margin = {left: 40, top: 50, right: 20, bottom: 50},
+	var margin = {left: 40, top: 50, right: 20, bottom: 20},
 		width = $("#rightside").width() - margin.left - margin.right,
-		height = $('#rightside').height() / 2 - margin.bottom - margin.top;
+		height = $('#rightside').height() / 3 - margin.bottom - margin.top;
 
 	var svg = d3.select("#rightside")
 		.append('svg')
@@ -159,8 +155,26 @@ function DrawScatter(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+	const maxTime = d3.max(trips.map(trip => {
+			let end = new Date(trip['endtime']);
+			let start = new Date(trip['starttime']);
+			let diff = end - start;
+			return Math.floor((diff/1000)/60);
+	}));
+
+	trips.forEach(t => {
+		let end = new Date(t['endtime']);
+		let start = new Date(t['starttime']);
+		let diff = end - start;
+		console.log(end);
+		console.log(start);
+		console.log(Math.floor((diff/1000)/60));
+		console.log(t['avspeed']);
+	});
+
+
 	const xScale = d3.scaleLinear()
-		.domain([0, trips.length])
+		.domain([0, maxTime+10])
 		.range([0, width]);
 
 	const maxSpeed = d3.max(trips.map(trip => trip['avspeed']));
@@ -213,13 +227,28 @@ function DrawScatter(trips) {
 		.attr('font-weight', 'bold')
 		.attr('fill', 'black')
 		.style('text-anchor', 'middle')
-		.text('Average Speed');
+		.text('Average Speed vs. Duration');
+
+	let tooltip = d3.select('#rightside').append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 0);
 
 	svg.selectAll('.dot')
 		.data(trips)
 		.enter().append('circle')
-		.attr('cx', t => t['starttime'])
+		.attr('class', 'dot')
+		.attr('cx', t => {
+			let end = new Date(t['endtime']);
+			let start = new Date(t['starttime']);
+			let diff = end - start;
+			return Math.floor((diff/1000)/60); // convert duration to minutes
+		})
 		.attr('cy', t => t['avspeed'])
 		.attr('r', 4)
-
+		// .on('mouseover', t => {
+		// 	tooltip.transition()
+		// 		.duration(200)
+		// 		.style('opacity', 0.9);
+		// 	tooltip.html('Duration:')
+		// })
 }

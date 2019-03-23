@@ -108,9 +108,10 @@ map.on('draw:created', function(e) {
 			.then(function(d){var result = d.map(function(a) { return a.properties; });
 		console.log(result);		// Trip Info: avspeed, distance, duration, endtime, maxspeed, minspeed, starttime, streetnames, taxiid, tripid
 		DrawRS(result);
-		DrawScatter(result);
-		// TODO: Add D3 visualization functions, ex: drawGraph(result)
 
+		// TODO: Add D3 visualization functions, ex: drawGraph(result)
+		DrawScatter(result);
+		DrawWordcloud(result);
 		});
 	}
 	
@@ -145,42 +146,23 @@ function DrawRS(trips) {
 function DrawScatter(trips) {
 	// Initialize svg for plots on right side
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#rightside").width() - margin.left - margin.right,
-		height = $('#rightside').height() / 3 - margin.bottom - margin.top;
+		width = $("#scatter").width() - margin.left - margin.right,
+		height = $('#scatter').height() - margin.bottom - margin.top;
 
-	var svg = d3.select("#rightside")
+	var svg = d3.select("#scatter")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-	// Subset out duration and avg speed of taxi trips
-	let data = trips.map(t => {
-		let end = new Date(t['endtime']);
-		let start = new Date(t['starttime']);
-		let diff = end - start;
-
-		return {
-			'duration': Math.floor((diff/1000)/60),
-			'avspeed': t['avspeed']
-		};
-	});
-
-	data.forEach((d, i) => {
-		console.log(i);
-		for(let key in d) {
-			console.log(key, d[key]);
-		}
-	});
-
 	// Generate x and y axis scales
 	const xScale = d3.scaleLinear()
-		.domain([0, d3.max(data.map(d => d.duration)) + 4])
+		.domain([0, d3.max(trips.map(t => t.duration / 60)) + 4])
 		.range([0, width]);
 
 	const yScale = d3.scaleLinear()
-		.domain([0, d3.max(data.map(d => d.avspeed))]).nice()
+		.domain([0, d3.max(trips.map(t => t.avspeed))]).nice()
 		.range([height, 0]);
 
 	const xAxis = d3.axisBottom(xScale);
@@ -197,6 +179,7 @@ function DrawScatter(trips) {
 		.attr('class', 'axis')
 		.call(yAxis);
 
+	// x axis label
 	svg.append('text')
 		.attr('class', 'label')
 		.attr('x', (width + margin.left + margin.right) / 2)
@@ -229,36 +212,62 @@ function DrawScatter(trips) {
 		.text('Average Speed vs. Duration');
 
 	// Tooltip div
-	let tooltip = d3.select('#rightside')
+	let tooltip = d3.select('#scatter')
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
 
 	// Tooltip mouseover handler
-	let tipMouseover = d => {
-		let html = 'test';
+	let tipMouseover = t => {
+		let html = 'Duration: ' + (t.duration / 60)
+					+ "<br/>"
+					+ 'Avg Speed: ' + t.avspeed;
 
 		tooltip.html(html)
-			.style('left', (d3.event.pageX + 15) + 'px')
-			.style('top', (d3.event.pageY - 28) + 'px')
+			.style('left', (d3.event.pageX) + 'px')
+			.style('top', (d3.event.pageY) + 'px')
 			.transition()
 			.duration(200)
 			.style('opacity', 0.9)
 	};
 
-	let tipMouseout = d => {
+	let tipMouseout = () => {
 		tooltip.transition()
 			.duration(300)
 			.style('opacity', 0)
 	};
 
 	svg.selectAll('.dot')
-		.data(data)
+		.data(trips)
 		.enter().append('circle')
 		.attr('class', 'dot')
-		.attr('cx', d => xScale(d.duration))
-		.attr('cy', d => yScale(d.avspeed))
+		.attr('cx', t => xScale(t.duration / 60))
+		.attr('cy', t => yScale(t.avspeed))
 		.attr('r', 4)
 		.on('mouseover', tipMouseover)
 		.on('mouseout', tipMouseout);
+}
+
+function DrawWordcloud(trips) {
+
+	// Create array containing all street names
+	let streets = [];
+	trips.map(t => {
+		t.streetnames.forEach(st => {
+			streets.push(st);
+		})
+	});
+
+	// Create dictionary containing street counts
+	let streetCount = Object.create(null);
+	for(let i = 0; i < streets.length; i++) {
+		let word = streets[i];
+		if (!streetCount[word]) {
+			streetCount[word] = 1;
+		} else {
+			streetCount[word]++;
+		}
+	}
+
+
 }

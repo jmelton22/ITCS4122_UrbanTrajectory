@@ -62,6 +62,44 @@ var drawControl = new L.Control.Draw({
     }
 });
 map.addControl(drawControl); // To add anything to map, add it to "drawControl"
+
+// Initialize svg for plots on right side
+var margin = {left: 50, top: 50, right: 20, bottom: 50},
+	width = $("#rightside").width() - margin.left - margin.right,
+	height = width*2/3;
+
+var svg = d3.select("#rightside")
+	.append('svg')
+	.attr("width", (width + margin.left + margin.right))
+	.attr("height", (height + margin.top + margin.bottom))
+	.append('g')
+	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+const xScale = d3.scaleLinear()
+	.range([0, width]);
+
+const yScale = d3.scaleLinear()
+	.range([height, 0]);
+
+const xAxis = d3.axisBottom(xScale);
+const yAxis = d3.axisLeft(yScale);
+
+// x axis path and ticks
+svg.append('g')
+	.attr('class', 'axis')
+	.attr('transform', 'translate(0, ' + height + ')')
+	.call(xAxis);
+
+// y axis path + ticks
+svg.append('g')
+	.attr('class', 'axis')
+	.call(yAxis);
+
+// svg.append('rect')
+// 	.attr('width', '100%')
+// 	.attr('height', '100%')
+// 	.style('fill', 'black');
+
 //*******************************************************************************************************************************************************
 //*****************************************************************************************************************************************
 // Index Road Network by Using R-Tree
@@ -139,4 +177,8 @@ function DrawRS(trips) {
 			polyline.addLatLng([parseFloat(TPT[y+1]), parseFloat(TPT[y])]);
 		}
 	}		
+}
+
+function DrawScatter(trips) {
+
 }

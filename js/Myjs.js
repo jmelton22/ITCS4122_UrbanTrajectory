@@ -114,7 +114,8 @@ map.on('draw:created', function(e) {
 		ScatterDistanceDuration(result);
 		ScatterSpeedDistance(result);
 
-		DrawWordcloud(result);
+		//DrawWordcloud(result);
+		DrawBarChart(result);
 		// DrawChordPlot(result);
 		});
 	}
@@ -506,7 +507,7 @@ function DrawWordcloud(trips) {
 
 	xScale.domain(d3.extent(streetCount, d => d.value));
 
-	// makeCloud if failing
+	// makeCloud is failing
 	makeCloud();
 
 	function makeCloud() {
@@ -535,6 +536,25 @@ function DrawWordcloud(trips) {
 			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
 			.text(d => d.key);
 	}
+}
+
+function DrawBarChart(trips) {
+	console.log('here');
+
+	// Initialize svg for plot
+	var margin = {left: 40, top: 50, right: 20, bottom: 30},
+		width = $("#bar-chart").width(),
+		height = $('#bar-chart').height();
+
+	console.log($('#bar-chart').width(), $('#bar-chart').height());
+
+	var svg = d3.select("#bar-chart")
+		.append('svg')
+		.attr("width", (width + margin.left + margin.right))
+		.attr("height", (height + margin.top + margin.bottom))
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
 }
 
 function DrawChordPlot(trips) {

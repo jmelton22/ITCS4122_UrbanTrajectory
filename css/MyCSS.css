@@ -70,9 +70,16 @@ html {
 
 #word-cloud {
 	width: 30%;
-	height: 47%;
+	height: 40%;
 	position: fixed;
-	border-bottom: 1px solid black;
 	font-family: Helvetica, sans-serif;
 	font-size: 14px;
+}
+
+#bar-chart {
+	top: 50%;
+	width: 30%;
+	height: 50%;
+	position: fixed;
+	border-top: 1px solid black;
 }

@@ -65,13 +65,21 @@
     </nav>
 	 <div id="map"></div>
 	<div id="right-side">
-		<div id="scatter-plots">
-			<div class="scatter" id="plot1"></div>
-			<div class="scatter" id="plot2"></div>
-			<div class="scatter" id="plot3"></div>
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#scatter-plots">Scatter Plots</a></li>
+			<li><a data-toggle="tab" href="#word-cloud">Word Cloud</a></li>
+			<li><a data-toggle="tab" href="#cord-plot">Cord Plot</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="scatter-plots" class="tab-pane fade in active">
+				<div class="scatter" id="plot1"></div>
+				<div class="scatter" id="plot2"></div>
+				<div class="scatter" id="plot3"></div>
+			</div>
+			<div id="word-cloud" class="tab-pane fade"></div>
+			<div id="cord-plot" class="tab-pane fade"></div>
 		</div>
-		<div id="word-cloud"></div>
-		<div  id="cord-plot"></div>
+
 	</div>
 	 <div id="scatter1"></div>
 	<div id="scatter2"></div>

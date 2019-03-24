@@ -21,24 +21,30 @@ html {
 	top: 6.7%;
 }
 
+.nav>li>a {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
 .scatter {
 	width: 30%;
-	height: 30%;
+	height: 29.25%;
 	position: fixed;
 	outline: 1px solid black;
 	padding-bottom: 5px;
 }
 
 #plot1 {
+	outline: none;
 }
 
 #plot2 {
-	height: 32.25%;
-	top: 36.7%;
+	height: 30%;
+	top: 40.2%;
 }
 
 #plot3 {
-	top: 69%;
+	top: 70.25%;
 }
 
 .tooltip {

@@ -13,10 +13,13 @@
 	<link href="css/leaflet.draw.css" rel="stylesheet"/>
 	<!-- Your Style -->
     <link href="css/MyCSS.css" rel="stylesheet">
+
 	  <!-- D3 libraries -->
 	  <script src="//d3js.org/d3.v5.min.js"></script>
 	  <script src="js/d3.layout.cloud.js"></script>
 	  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+	  <!-- Random number generator -->
+	  <script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
 	<!-- Leaflet Map api -->
 	<script src="js/leaflet-src.js"></script>
 	<script src="js/Leaflet.draw.js"></script>
@@ -69,7 +72,7 @@
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-toggle="tab" href="#scatter-plots">Scatter Plots</a></li>
 			<li><a data-toggle="tab" href="#word-cloud">Word Cloud</a></li>
-			<li><a data-toggle="tab" href="#chord-plot">Cord Plot</a></li>
+			<li><a data-toggle="tab" href="#chord-plot">Chord Plot</a></li>
 		</ul>
 		<div class="tab-content">
 			<div id="scatter-plots" class="tab-pane fade in active">
@@ -80,7 +83,6 @@
 			<div id="word-cloud" class="tab-pane fade"></div>
 			<div id="chord-plot" class="tab-pane fade"></div>
 		</div>
-
 	</div>
 	 <div id="scatter1"></div>
 	<div id="scatter2"></div>

@@ -114,7 +114,7 @@ map.on('draw:created', function(e) {
 		ScatterDistanceDuration(result);
 		ScatterSpeedDistance(result);
 
-		// DrawWordcloud(result);
+		DrawWordcloud(result);
 		// DrawChordPlot(result);
 		});
 	}
@@ -482,6 +482,58 @@ function DrawWordcloud(trips) {
 		} else {
 			streetCount[word]++;
 		}
+	}
+
+	let margin = {top: 70, right: 100, bottom: 0, left:100},
+		width = $('#word-cloud').width() - margin.left - margin.right,
+		height = $('#word-cloud').height() - margin.top - margin.bottom;
+
+	//
+	let svg = d3.select('#word-cloud')
+		.append('svg')
+		.attr('width', width + margin.left + margin.right)
+		.attr('height', height + margin.top + margin.bottom);
+
+	let xScale = d3.scaleLinear()
+		.range([10, 100]);
+
+	let focus = svg.append('g')
+		.attr('transform', 'translate(' + [width/2, height/2 + margin.top] + ')');
+
+	let colorMap = ['red', '#a38b07'];
+
+	let rng = new alea('hello.');
+
+	xScale.domain(d3.extent(streetCount, d => d.value));
+
+	// makeCloud if failing
+	makeCloud();
+
+	function makeCloud() {
+		d3.layout.cloud().size([width, height])
+			.timeInterval(20)
+			.words(streetCount)
+			.fontSize(d => xScale(+d.value))
+			.text(d => d.key)
+			.font('Impact')
+			.random(rng)
+			.on('end', output => draw(output))
+			.start();
+	}
+
+	d3.layout.cloud().stop();
+
+	function draw(words) {
+		focus.selectAll('text')
+			.data(words)
+			.enter()
+			.append('text')
+			.style('font-size', d => xScale(d.value) + 'px')
+			.style('font-family', 'Impact')
+			.style('fill', (d, i) => colorMap[~~(rng() *2)])
+			.attr('text-anchor', 'middle')
+			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
+			.text(d => d.key);
 	}
 }
 

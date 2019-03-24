@@ -145,10 +145,10 @@ function DrawRS(trips) {
 function ScatterSpeedDuration(trips) {
 	// Initialize svg for plot
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#scatter1").width() - margin.left - margin.right,
-		height = $('#scatter1').height() - margin.bottom - margin.top;
+		width = $("#plot1").width() - margin.left - margin.right,
+		height = $('#plot1').height() - margin.bottom - margin.top;
 
-	var svg = d3.select("#scatter1")
+	var svg = d3.select("#plot1")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))
@@ -251,10 +251,10 @@ function ScatterSpeedDuration(trips) {
 function ScatterDistanceDuration(trips) {
 	// Initialize svg for plot
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#scatter2").width() - margin.left - margin.right,
-		height = $('#scatter2').height() - margin.bottom - margin.top;
+		width = $("#plot2").width() - margin.left - margin.right,
+		height = $('#plot2').height() - margin.bottom - margin.top;
 
-	var svg = d3.select("#scatter2")
+	var svg = d3.select("#plot2")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))
@@ -357,10 +357,10 @@ function ScatterDistanceDuration(trips) {
 function ScatterSpeedDistance(trips) {
 	// Initialize svg for plot
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#scatter3").width() - margin.left - margin.right,
-		height = $('#scatter3').height() - margin.bottom - margin.top;
+		width = $("#plot3").width() - margin.left - margin.right,
+		height = $('#plot3').height() - margin.bottom - margin.top;
 
-	var svg = d3.select("#scatter3")
+	var svg = d3.select("#plot3")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))

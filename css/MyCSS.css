@@ -13,30 +13,36 @@ html {
 	z-index: 1;
 }
 
-#scatter1 {
+#right-side {
 	width: 30%;
-	height: 30%;
-	position: fixed; 
-	background-color: snow;
+	height: 100%;
+	position: fixed;
 	left: 70%;
+	top: 6.7%;
 }
 
-#scatter2 {
+.scatter {
 	width: 30%;
 	height: 30%;
 	position: fixed;
-	background-color: snow;
-	left: 70%;
-	top: 37%;
+	outline: 1px solid black;
+	padding-bottom: 5px;
 }
 
-#scatter3 {
-    width: 30%;
-    height: 30%;
-    position: fixed;
-    background-color: snow;
-    left: 70%;
-    top: 68%;
+#plot1 {
+}
+
+#plot2 {
+	height: 32.25%;
+	top: 36.7%;
+}
+
+#plot3 {
+	top: 69%;
+}
+
+.tooltip {
+
 }
 
 .dot {

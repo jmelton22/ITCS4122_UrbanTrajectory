@@ -56,9 +56,14 @@ html {
 
 .tooltip {
 	position: absolute;
-	font-size: 12px;
-	width:  auto;
+	width: auto;
 	height: auto;
 	pointer-events: none;
 	background-color: white;
+
+	border-radius: 7px;
+	border: 1px solid dimgrey;
+
+	font: 12px arial, sans-serif;
+	padding: 2px 4px 2px 5px;
 }

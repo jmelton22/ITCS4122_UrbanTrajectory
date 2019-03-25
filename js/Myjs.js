@@ -500,11 +500,6 @@ function DrawWordcloud(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-	svg.append('rect')
-		.attr('width', width - 200)
-		.attr('height', height - 300)
-		.style('fill', 'red');
-
 	// Create entries from street count dict
     let word_entries = d3.entries(streetCount);
 
@@ -549,7 +544,7 @@ function DrawWordcloud(trips) {
             .append('text')
             .style('font-size', d => xScale(d.value) + 'px')
             .style('font-family', 'Impact')
-            .style('fill', (d, i) => colorMap[Math.floor(Math.random() * colorMap.length)])
+            .style('fill', (d, i) => colorMap[i % 6])
             .attr('text-anchor', 'middle')
             .attr('transform', d => {
                 return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
@@ -581,34 +576,47 @@ function DrawBarChart(trips) {
 	console.log('streetcount: ', streetCount);
 
 	// Initialize svg for plot
-	var margin = {left: 30, top: 10, right: 10, bottom: 10},
-		width = $('.half-page').width()*5 - margin.left,
-		height = $('.half-page').height()*5 + 100;
+	let margin = {left: 30, top: 10, right: 10, bottom: 10},
+		width = $('.half-page').width()*16 - margin.left,
+		height = $('.half-page').height()*5 + 130;
 
-	var svg = d3.select("#bar-chart")
+	let svg = d3.select("#bar-chart")
 		.append('svg')
 		.attr("width", width)
 		.attr("height", height)
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-	// svg.append('rect')
-	// 	.attr('width', width - margin.left*2 - margin.right)
-	// 	.attr('height', height - margin.top*2 - margin.bottom)
-	// 	.style('fill', 'red');
-
 	let data = d3.entries(streetCount);
+
+	function compare(a, b) {
+		let countA = a.value,
+			countB = b.value;
+
+		if(countA > countB) {
+			return -1;
+		} else if (countA < countB) {
+			return 1;
+		} else {
+			return 0;
+		}
+
+	}
+
+	data.sort(compare);
+	data = data.slice(0, 15);
+	console.log(data);
 
 	let xScale = d3.scaleBand()
 		.domain(data.map(d => d.key))
-		.round([0, width])
+		.rangeRound([0, width - margin.left])
 		.padding(0.1);
+
+	console.log(xScale.bandwidth());
 
 	let yScale = d3.scaleLinear()
 		.domain([0, d3.max(data.map(d => d.value))]).nice()
-		.rangeRound([height, 0]);
-
-	console.log('here');
+		.rangeRound([height-30, 0]);
 
 	const xAxis = d3.axisBottom(xScale);
 	const yAxis = d3.axisLeft(yScale);
@@ -616,7 +624,8 @@ function DrawBarChart(trips) {
 	// x axis path and ticks
 	svg.append('g')
 		.attr('class', 'axis')
-		.attr('transform', 'translate(0, ' + height + ')')
+		.attr('class', 'bar-axis')
+		.attr('transform', 'translate(0, ' + (height-30) + ')')
 		.call(xAxis);
 
 	// y axis path + ticks
@@ -624,16 +633,45 @@ function DrawBarChart(trips) {
 		.attr('class', 'axis')
 		.call(yAxis);
 
+	let tooltip = d3.select('body')
+		.append('g')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 1.0);
+
+	// Tooltip mouseover handler
+	let tipMouseover = d => {
+		let html = 'Street: <strong>' + d.key + '</strong>'
+			+ '<br/>'
+			+ 'Occurrences: ' + d.value;
+
+		tooltip.html(html)
+			.style('left', (d3.event.pageX) + 'px')
+			.style('top', (d3.event.pageY) + 'px')
+			.transition()
+			.duration(200)
+			.style('opacity', 0.9)
+	};
+
+	let tipMouseout = () => {
+		tooltip.transition()
+			.duration(300)
+			.style('opacity', 0)
+	};
 
 	svg.selectAll('.bar')
-		.data(streetCount)
+		.data(data)
 		.enter()
 		.append('rect')
 		.attr('class', 'bar')
 		.attr('x', d => xScale(d.key))
-		.attr('y', d => yScale(d.value))
-		.attr('width', xScale.bandWidth())
-		.attr('height', d => yScale(d.value));
+		.attr('y', d => (yScale(d.value) - margin.left))
+		.attr('width', xScale.bandwidth())
+		.attr('height', d => (height - yScale(d.value)))
+		.on('mouseover', tipMouseover)
+		.on('mouseout', tipMouseout);
+
+
 
 }
 

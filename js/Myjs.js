@@ -114,8 +114,8 @@ map.on('draw:created', function(e) {
 		ScatterDistanceDuration(result);
 		ScatterSpeedDistance(result);
 
-		//DrawWordcloud(result);
-		DrawBarChart(result);
+		DrawWordcloud(result);
+		//DrawBarChart(result);
 		// DrawChordPlot(result);
 		});
 	}
@@ -257,6 +257,8 @@ function ScatterDistanceDuration(trips) {
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
 		width = $("#plot2").width() - margin.left - margin.right,
 		height = $('#plot2').height() - margin.bottom - margin.top;
+
+	console.log('plot: ', $("#plot2").width(), $('#plot2').height());
 
 	var svg = d3.select("#plot2")
 		.append('svg')
@@ -485,15 +487,25 @@ function DrawWordcloud(trips) {
 		}
 	}
 
-	let margin = {top: 70, right: 100, bottom: 0, left:100},
-		width = $('#word-cloud').width() - margin.left - margin.right,
-		height = $('#word-cloud').height() - margin.top - margin.bottom;
+	let margin = {top: 10, right: 10, bottom: 10, left:10},
+		width = $('.half-page').width() * 16 - margin.left,
+		height = $('.half-page').height() * 8;
 
-	//
+	// console.log('word-cloud: ', $('#word-cloud').width(), $('#word-cloud').height());
+    console.log('half-page: ', $('.half-page').width(), $('.half-page').height());
+
 	let svg = d3.select('#word-cloud')
 		.append('svg')
 		.attr('width', width + margin.left + margin.right)
-		.attr('height', height + margin.top + margin.bottom);
+		.attr('height', height + margin.top + margin.bottom)
+        .style('fill', 'red');
+
+	svg.append('rect')
+        .attr('width', width - margin.right)
+        .attr('height', height - margin.bottom)
+        .style('fill', 'red')
+        .style('stroke', 'blue')
+        .style('stroke-width', '5px');
 
 	let xScale = d3.scaleLinear()
 		.range([10, 100]);

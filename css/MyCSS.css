@@ -68,18 +68,15 @@ html {
 	padding: 2px 4px 2px 5px;
 }
 
-#word-cloud {
+.half-page {
 	width: 30%;
-	height: 40%;
+	height: 45%;
 	position: fixed;
-	font-family: Helvetica, sans-serif;
-	font-size: 14px;
+	outline: 1px solid black;
+	background-color: snow;
+	padding-bottom: 5px;
 }
 
 #bar-chart {
-	top: 50%;
-	width: 30%;
-	height: 50%;
-	position: fixed;
-	border-top: 1px solid black;
+	top: 55%;
 }

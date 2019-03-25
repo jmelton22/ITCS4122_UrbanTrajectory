@@ -487,6 +487,7 @@ function DrawWordcloud(trips) {
 		}
 	}
 
+	// Initialize svg for word cloud
 	let margin = {top: 10, right: 10, bottom: 10, left:10},
 		width = $('.half-page').width() * 16 - margin.left,
 		height = $('.half-page').height() * 8;
@@ -497,9 +498,15 @@ function DrawWordcloud(trips) {
 		.attr('width', width + margin.left + margin.right)
 		.attr('height', height + margin.top + margin.bottom);
 
+	svg.append('rect')
+		.attr('width', width - 200)
+		.attr('height', height - 300)
+		.style('fill', 'red');
+
+	// Create entries from street count dict
     let word_entries = d3.entries(streetCount);
 
-    // set the ranges for the scales
+    // Set the ranges for font size scale
     let xScale = d3.scaleLinear()
         .domain(d3.extent(word_entries, d => d.value))
         .range([10, 100]);
@@ -510,9 +517,9 @@ function DrawWordcloud(trips) {
 		.attr("transform", "translate(" + [width/2, height/2] + ")");
 
     let colorMap = ["#8b0707", "#dc3912", "#ff9900", "#109618",
-					"#990099", "#0099c6"];
+					"#0099c6", "#990099"];
 
-    // seeded random number generator
+    // Seeded random number generator
     let arng = new alea('hello.');
 
     makeCloud();

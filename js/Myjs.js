@@ -544,7 +544,7 @@ function DrawWordcloud(trips) {
             .append('text')
             .style('font-size', d => xScale(d.value) + 'px')
             .style('font-family', 'Impact')
-            .style('fill', (d, i) => colorMap[i % 6])
+            .style('fill', (d, i) => colorMap[i % colorMap.length])
             .attr('text-anchor', 'middle')
             .attr('transform', d => {
                 return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
@@ -587,8 +587,6 @@ function DrawBarChart(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-	let data = d3.entries(streetCount);
-
 	function compare(a, b) {
 		let countA = a.value,
 			countB = b.value;
@@ -603,16 +601,14 @@ function DrawBarChart(trips) {
 
 	}
 
+	let data = d3.entries(streetCount);
 	data.sort(compare);
 	data = data.slice(0, 15);
-	console.log(data);
 
 	let xScale = d3.scaleBand()
 		.domain(data.map(d => d.key))
 		.rangeRound([0, width - margin.left])
 		.padding(0.1);
-
-	console.log(xScale.bandwidth());
 
 	let yScale = d3.scaleLinear()
 		.domain([0, d3.max(data.map(d => d.value))]).nice()
@@ -650,7 +646,7 @@ function DrawBarChart(trips) {
 			.style('top', (d3.event.pageY) + 'px')
 			.transition()
 			.duration(200)
-			.style('opacity', 0.9)
+			.style('opacity', 0.95)
 	};
 
 	let tipMouseout = () => {
@@ -658,6 +654,9 @@ function DrawBarChart(trips) {
 			.duration(300)
 			.style('opacity', 0)
 	};
+
+	let colorMap = ["#8b0707", "#dc3912", "#ff9900", "#109618",
+		"#0099c6", "#990099"];
 
 	svg.selectAll('.bar')
 		.data(data)
@@ -668,6 +667,7 @@ function DrawBarChart(trips) {
 		.attr('y', d => (yScale(d.value) - margin.left))
 		.attr('width', xScale.bandwidth())
 		.attr('height', d => (height - yScale(d.value)))
+		.attr('fill', (d, i) => colorMap[i % colorMap.length])
 		.on('mouseover', tipMouseover)
 		.on('mouseout', tipMouseout);
 

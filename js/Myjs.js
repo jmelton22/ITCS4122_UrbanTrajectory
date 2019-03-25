@@ -496,59 +496,66 @@ function DrawWordcloud(trips) {
 
 	let svg = d3.select('#word-cloud')
 		.append('svg')
-		.attr('width', width + margin.left + margin.right)
-		.attr('height', height + margin.top + margin.bottom)
-        .style('fill', 'red');
+        .append('g')
+		.attr('width', width * 2 + margin.left + margin.right)
+		.attr('height', height * 2 + margin.top + margin.bottom);
 
-	svg.append('rect')
-        .attr('width', width - margin.right)
-        .attr('height', height - margin.bottom)
-        .style('fill', 'red')
-        .style('stroke', 'blue')
-        .style('stroke-width', '5px');
+	// svg.append('rect')
+    //     .attr('width', width - margin.right)
+    //     .attr('height', height - margin.bottom)
+    //     .style('fill', 'red')
+    //     .style('stroke', 'blue')
+    //     .style('stroke-width', '5px');
 
-	let xScale = d3.scaleLinear()
-		.range([10, 100]);
+    let word_entries = d3.entries(streetCount);
 
-	let focus = svg.append('g')
-		.attr('transform', 'translate(' + [width/2, height/2 + margin.top] + ')');
+    // set the ranges for the scales
+    let xScale = d3.scaleLinear()
+        .domain(d3.extent(word_entries, d => d.value))
+        .range([10, 100]);
 
-	let colorMap = ['red', '#a38b07'];
+    let focus = svg.append('g')
+        .attr("transform", "translate(" + [width/2, height/2] + ")");
 
-	let rng = new alea('hello.');
+    let colorMap = ['red', '#a38b07', 'orange'];
 
-	xScale.domain(d3.extent(streetCount, d => d.value));
+    // seeded random number generator
+    let arng = new alea('hello.');
 
-	// makeCloud is failing
-	makeCloud();
+    makeCloud();
 
-	function makeCloud() {
-		d3.layout.cloud().size([width, height])
-			.timeInterval(20)
-			.words(streetCount)
-			.fontSize(d => xScale(+d.value))
-			.text(d => d.key)
-			.font('Impact')
-			.random(rng)
-			.on('end', output => draw(output))
-			.start();
-	}
+    function makeCloud() {
+        d3.layout.cloud().size([width, height])
+            .timeInterval(20)
+            .words(word_entries)
+            .fontSize(d => xScale(+d.value))
+            .text(d => d.key)
+            .font('Impact')
+            .random(arng)
+            .on('end', output => draw(output))
+            .start()
+    }
 
-	d3.layout.cloud().stop();
+    d3.layout.cloud().stop();
 
-	function draw(words) {
-		focus.selectAll('text')
-			.data(words)
-			.enter()
-			.append('text')
-			.style('font-size', d => xScale(d.value) + 'px')
-			.style('font-family', 'Impact')
-			.style('fill', (d, i) => colorMap[~~(rng() *2)])
-			.attr('text-anchor', 'middle')
-			.attr('transform', d => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
-			.text(d => d.key);
-	}
+    function draw(words) {
+        focus.selectAll('text')
+            .data(words)
+            .enter()
+            .append('text')
+            .style('font-size', d => xScale(d.value) + 'px')
+            .style('font-family', 'Impact')
+            .style('fill', (d, i) => colorMap[Math.floor(Math.random() * colorMap.length)])
+            .attr('text-anchor', 'middle')
+            .attr('transform', d => {
+                return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
+            })
+            .text(d => d.key);
+    }
+
 }
+
+
 
 function DrawBarChart(trips) {
 	console.log('here');

@@ -26,6 +26,13 @@ html {
 	padding-bottom: 5px;
 }
 
+#chord-plot {
+	width: 100%;
+	height: 50%;
+	position: fixed;
+	border-bottom: 1px solid black;
+}
+
 .scatter {
 	width: 30%;
 	height: 29.25%;

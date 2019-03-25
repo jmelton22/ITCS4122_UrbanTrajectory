@@ -117,7 +117,7 @@ map.on('draw:created', function(e) {
 		DrawWordcloud(result);  // TODO: Wordcloud will not resize to fill div
 		DrawBarChart(result);
 
-		// DrawChordPlot(result);
+		DrawChordPlot(result);
 		});
 	}
 	
@@ -258,8 +258,6 @@ function ScatterDistanceDuration(trips) {
 	var margin = {left: 40, top: 50, right: 20, bottom: 30},
 		width = $("#plot2").width() - margin.left - margin.right,
 		height = $('#plot2').height() - margin.bottom - margin.top;
-
-	console.log('plot: ', $("#plot2").width(), $('#plot2').height());
 
 	var svg = d3.select("#plot2")
 		.append('svg')
@@ -678,4 +676,110 @@ function DrawBarChart(trips) {
 
 function DrawChordPlot(trips) {
 
+	// Extract start and end street names for each trip
+	let streets = trips.map(t => {
+		if (t.streetnames.length >= 2) {
+			return {
+				start: t.streetnames[0],
+				end: t.streetnames[t.streetnames.length - 1]
+			};
+		}
+	});
+
+	console.log(streets);
+
+	const indexByName = new Map;
+	const nameByIndex = new Map;
+	let matrix = [];
+	let n = 0;
+
+	// Identify unique streets to create groups
+	let uniqueStreets = [];
+	streets.map(s => {
+		uniqueStreets.push(s.start);
+		uniqueStreets.push(s.end);
+	});
+	uniqueStreets = [...new Set(uniqueStreets)];
+
+	console.log(uniqueStreets);
+
+	// Assign an index for each unique street
+	uniqueStreets.forEach(d => {
+		if (!indexByName[d]) {
+			nameByIndex.set(n, d);
+			indexByName.set(d, n++);
+		}
+	});
+
+	console.log('index by name: ', indexByName);
+	console.log('name by index: ', nameByIndex);
+
+	// Creat flow matrix between start and end streets
+	streets.forEach(d => {
+		const source = indexByName.get(d.start);
+		let row = matrix[source];
+
+		if (!row) {
+			row = matrix[source] = Array.from({length: n}).fill(0);
+			row[indexByName.get(d.end)]++;
+		} else {
+			row[indexByName.get(d.end)]++;
+		}
+	});
+
+	console.log(matrix);
+
+	// Initialize svg for plot
+	let margin = {left: 40, top: 50, right: 20, bottom: 30},
+		width = $("#chord-plot").width() - margin.left - margin.right,
+		height = $('#chord-plot').height() - margin.bottom - margin.top;
+
+	let svg = d3.select("#chord-plot")
+		.append('svg')
+		.attr("width", (width + margin.left + margin.right))
+		.attr("height", (height + margin.top + margin.bottom))
+		.append('g')
+		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+margin.top+margin.bottom)/2 + ')');
+
+	let testMatrix = [
+		[11975, 5871, 8916, 2868],
+		[1951, 10048, 2060, 6171],
+		[8010, 16145, 8090, 8045],
+		[1013, 990, 940, 6907]
+	];
+
+	console.log('test', testMatrix);
+
+	let res = d3.chord()
+		.padAngle(0.05)
+		.sortSubgroups(d3.descending)
+		(testMatrix);
+
+	console.log('res', res);
+
+	svg.datum(res)
+		.append('g')
+		.selectAll('g')
+		.data(d => d.groups)
+		.enter()
+		.append('g')
+		.append('path')
+		.style('fill', 'grey')
+		.style('stroke', 'black')
+		.attr('d', d3.arc()
+			.innerRadius(175)
+			.outerRadius(180)
+		);
+
+	svg.datum(res)
+		.append('g')
+		.selectAll('path')
+		.data(d => d)
+		.enter()
+		.append('path')
+		.attr('d', d3.ribbon()
+			.radius(175)
+		)
+		.style('fill', '#69b3a2')
+		.style('stroke', 'black');
 }

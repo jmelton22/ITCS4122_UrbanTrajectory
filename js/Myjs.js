@@ -115,7 +115,7 @@ map.on('draw:created', function(e) {
 		ScatterSpeedDistance(result);
 
 		DrawWordcloud(result);
-		//DrawBarChart(result);
+		DrawBarChart(result);
 		// DrawChordPlot(result);
 		});
 	}
@@ -496,7 +496,9 @@ function DrawWordcloud(trips) {
 		.append('svg')
         .append('g')
 		.attr('width', width + margin.left + margin.right)
-		.attr('height', height + margin.top + margin.bottom);
+		.attr('height', height + margin.top + margin.bottom)
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 	svg.append('rect')
 		.attr('width', width - 200)
@@ -557,21 +559,81 @@ function DrawWordcloud(trips) {
 }
 
 function DrawBarChart(trips) {
-	console.log('here');
+	// Create array containing all street names
+	let streets = [];
+	trips.map(t => {
+		t.streetnames.forEach(st => {
+			streets.push(st);
+		})
+	});
+
+	// Create dictionary containing street counts
+	let streetCount = Object.create(null);
+	for(let i = 0; i < streets.length; i++) {
+		let word = streets[i];
+		if (!streetCount[word]) {
+			streetCount[word] = 1;
+		} else {
+			streetCount[word]++;
+		}
+	}
+
+	console.log('streetcount: ', streetCount);
 
 	// Initialize svg for plot
-	var margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#bar-chart").width(),
-		height = $('#bar-chart').height();
-
-	console.log($('#bar-chart').width(), $('#bar-chart').height());
+	var margin = {left: 30, top: 10, right: 10, bottom: 10},
+		width = $('.half-page').width()*5 - margin.left,
+		height = $('.half-page').height()*5 + 100;
 
 	var svg = d3.select("#bar-chart")
 		.append('svg')
-		.attr("width", (width + margin.left + margin.right))
-		.attr("height", (height + margin.top + margin.bottom))
+		.attr("width", width)
+		.attr("height", height)
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+	// svg.append('rect')
+	// 	.attr('width', width - margin.left*2 - margin.right)
+	// 	.attr('height', height - margin.top*2 - margin.bottom)
+	// 	.style('fill', 'red');
+
+	let data = d3.entries(streetCount);
+
+	let xScale = d3.scaleBand()
+		.domain(data.map(d => d.key))
+		.round([0, width])
+		.padding(0.1);
+
+	let yScale = d3.scaleLinear()
+		.domain([0, d3.max(data.map(d => d.value))]).nice()
+		.rangeRound([height, 0]);
+
+	console.log('here');
+
+	const xAxis = d3.axisBottom(xScale);
+	const yAxis = d3.axisLeft(yScale);
+
+	// x axis path and ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	// y axis path + ticks
+	svg.append('g')
+		.attr('class', 'axis')
+		.call(yAxis);
+
+
+	svg.selectAll('.bar')
+		.data(streetCount)
+		.enter()
+		.append('rect')
+		.attr('class', 'bar')
+		.attr('x', d => xScale(d.key))
+		.attr('y', d => yScale(d.value))
+		.attr('width', xScale.bandWidth())
+		.attr('height', d => yScale(d.value));
 
 }
 

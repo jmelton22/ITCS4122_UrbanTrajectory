@@ -109,13 +109,14 @@ map.on('draw:created', function(e) {
 		console.log(result);		// Trip Info: avspeed, distance, duration, endtime, maxspeed, minspeed, starttime, streetnames, taxiid, tripid
 		DrawRS(result);
 
-		// TODO: Add D3 visualization functions, ex: drawGraph(result)
+		// Add visualization functions to right-side
 		ScatterSpeedDuration(result);
 		ScatterDistanceDuration(result);
 		ScatterSpeedDistance(result);
 
-		DrawWordcloud(result);
+		DrawWordcloud(result);  // TODO: Wordcloud will not resize to fill div
 		DrawBarChart(result);
+
 		// DrawChordPlot(result);
 		});
 	}

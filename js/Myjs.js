@@ -491,21 +491,11 @@ function DrawWordcloud(trips) {
 		width = $('.half-page').width() * 16 - margin.left,
 		height = $('.half-page').height() * 8;
 
-	// console.log('word-cloud: ', $('#word-cloud').width(), $('#word-cloud').height());
-    console.log('half-page: ', $('.half-page').width(), $('.half-page').height());
-
 	let svg = d3.select('#word-cloud')
 		.append('svg')
         .append('g')
-		.attr('width', width * 2 + margin.left + margin.right)
-		.attr('height', height * 2 + margin.top + margin.bottom);
-
-	// svg.append('rect')
-    //     .attr('width', width - margin.right)
-    //     .attr('height', height - margin.bottom)
-    //     .style('fill', 'red')
-    //     .style('stroke', 'blue')
-    //     .style('stroke-width', '5px');
+		.attr('width', width + margin.left + margin.right)
+		.attr('height', height + margin.top + margin.bottom);
 
     let word_entries = d3.entries(streetCount);
 
@@ -514,15 +504,20 @@ function DrawWordcloud(trips) {
         .domain(d3.extent(word_entries, d => d.value))
         .range([10, 100]);
 
-    let focus = svg.append('g')
-        .attr("transform", "translate(" + [width/2, height/2] + ")");
+	let focus = svg.append('g')
+		.attr('width', width)
+		.attr('height', height)
+		.attr("transform", "translate(" + [width/2, height/2] + ")");
 
-    let colorMap = ['red', '#a38b07', 'orange'];
+    let colorMap = ["#8b0707", "#dc3912", "#ff9900", "#109618",
+					"#990099", "#0099c6"];
 
     // seeded random number generator
     let arng = new alea('hello.');
 
     makeCloud();
+
+    console.log(width, height);
 
     function makeCloud() {
         d3.layout.cloud().size([width, height])
@@ -552,10 +547,7 @@ function DrawWordcloud(trips) {
             })
             .text(d => d.key);
     }
-
 }
-
-
 
 function DrawBarChart(trips) {
 	console.log('here');

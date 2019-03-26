@@ -664,9 +664,9 @@ function DrawBarChart(trips) {
 		.append('rect')
 		.attr('class', 'bar')
 		.attr('x', d => xScale(d.key))
-		.attr('y', d => (yScale(d.value) - margin.left))
+		.attr('y', d => (yScale(d.value) - margin.left + 30))
 		.attr('width', xScale.bandwidth())
-		.attr('height', d => (height - yScale(d.value)))
+		.attr('height', d => (height - 30 - yScale(d.value)))
 		.attr('fill', (d, i) => colorMap[i % colorMap.length])
 		.on('mouseover', tipMouseover)
 		.on('mouseout', tipMouseout);

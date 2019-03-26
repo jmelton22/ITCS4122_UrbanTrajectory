@@ -764,6 +764,8 @@ function DrawChordPlot(trips) {
 			.outerRadius(170)
 		);
 
+	let color = d3.scaleOrdinal(d3.schemeCategory10);
+
 	svg.datum(res)
 		.append('g')
 		.selectAll('path')
@@ -773,7 +775,7 @@ function DrawChordPlot(trips) {
 		.attr('d', d3.ribbon()
 			.radius(165)
 		)
-		.style('fill', '#69b3a2')
+		.style('fill', d => color(d.source.index))
 		.style('stroke', 'black');
 }
 
@@ -794,8 +796,6 @@ function DrawSankeyPlot(trips) {
 		}
 	});
 
-	console.log(streets);
-
 	// Identify unique streets to create groups
 	let uniqueStreets = [];
 	streets.map(s => {
@@ -804,8 +804,6 @@ function DrawSankeyPlot(trips) {
 	});
 	uniqueStreets = [...new Set(uniqueStreets)];
 
-	console.log(uniqueStreets);
-
 	uniqueStreets.forEach((s, i) => {
 		data['nodes'].push({
 			node: i,
@@ -813,6 +811,6 @@ function DrawSankeyPlot(trips) {
 		});
 	});
 
-	console.log(data)
+	// console.log(data)
 
 }

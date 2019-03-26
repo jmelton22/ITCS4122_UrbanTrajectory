@@ -570,8 +570,6 @@ function DrawBarChart(trips) {
 		}
 	}
 
-	console.log('streetcount: ', streetCount);
-
 	// Initialize svg for plot
 	let margin = {left: 30, top: 10, right: 10, bottom: 10},
 		width = $(".half-page").width() * 4.5,
@@ -681,7 +679,7 @@ function DrawChordPlot(trips) {
 		}
 	});
 
-	console.log(streets);
+	console.log('streets: ', streets);
 
 	const indexByName = new Map;
 	const nameByIndex = new Map;
@@ -696,7 +694,7 @@ function DrawChordPlot(trips) {
 	});
 	uniqueStreets = [...new Set(uniqueStreets)];
 
-	console.log(uniqueStreets);
+	console.log('unique sts:', uniqueStreets);
 
 	// Assign an index for each unique street
 	uniqueStreets.forEach(d => {
@@ -722,7 +720,7 @@ function DrawChordPlot(trips) {
 		}
 	});
 
-	console.log(matrix);
+	console.log('matrix: ', matrix);
 
 	// Initialize svg for plot
 	let margin = {left: 30, top: 30, right: 30, bottom: 30},
@@ -743,14 +741,14 @@ function DrawChordPlot(trips) {
 		[1013, 990, 940, 6907]
 	];
 
-	let res = d3.chord()
+	let chord = d3.chord()
 		.padAngle(0.05)
 		.sortSubgroups(d3.descending)
 		(testMatrix);
 
-	console.log('res', res);
+	console.log('chords', chord);
 
-	svg.datum(res)
+	svg.datum(chord)
 		.append('g')
 		.selectAll('g')
 		.data(d => d.groups)
@@ -766,7 +764,7 @@ function DrawChordPlot(trips) {
 
 	let color = d3.scaleOrdinal(d3.schemeCategory10);
 
-	svg.datum(res)
+	svg.datum(chord)
 		.append('g')
 		.selectAll('path')
 		.data(d => d)

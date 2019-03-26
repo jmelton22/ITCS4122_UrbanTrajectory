@@ -106,19 +106,20 @@ map.on('draw:created', function(e) {
 		rt.data([[bounds.getSouthWest().lng, bounds.getSouthWest().lat],
 				[bounds.getNorthEast().lng, bounds.getNorthEast().lat]])
 			.then(function(d){var result = d.map(function(a) { return a.properties; });
-		console.log(result);		// Trip Info: avspeed, distance, duration, endtime, maxspeed, minspeed, starttime, streetnames, taxiid, tripid
-		DrawRS(result);
+				console.log(result);		// Trip Info: avspeed, distance, duration, endtime, maxspeed, minspeed, starttime, streetnames, taxiid, tripid
+				DrawRS(result);
 
-		// Add visualization functions to right-side
-		ScatterSpeedDuration(result);
-		ScatterDistanceDuration(result);
-		ScatterSpeedDistance(result);
+				// Add visualization functions to right-side
+				ScatterSpeedDuration(result);
+				ScatterDistanceDuration(result);
+				ScatterSpeedDistance(result);
 
-		DrawWordcloud(result);  // TODO: Wordcloud will not resize to fill div
-		DrawBarChart(result);
+				DrawWordcloud(result);  // TODO: Wordcloud will not resize to fill div
+				DrawBarChart(result);
 
-		DrawChordPlot(result);
-		});
+				DrawChordPlot(result); // TODO: Flow matrix not correct for street data
+				DrawSankeyPlot(result);
+			});
 	}
 	
 	drawnItems.addLayer(layer);			//Add your Selection to Map
@@ -498,7 +499,7 @@ function DrawWordcloud(trips) {
 		.attr('height', height + margin.top + margin.bottom)
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-	// Create entries from street count dict
+	// Create d3 data array from street count dict
     let word_entries = d3.entries(streetCount);
 
     // Set the ranges for font size scale
@@ -518,8 +519,6 @@ function DrawWordcloud(trips) {
     let arng = new alea('hello.');
 
     makeCloud();
-
-    console.log(width, height);
 
     function makeCloud() {
         d3.layout.cloud().size([width, height])
@@ -578,8 +577,6 @@ function DrawBarChart(trips) {
 		width = $(".half-page").width() * 4.5,
 		height = $('.half-page').height() * 8;
 
-	console.log($(".half-page").width(), $('.half-page').height());
-
 	let svg = d3.select("#bar-chart")
 		.append('svg')
 		.attr("width", width)
@@ -598,9 +595,9 @@ function DrawBarChart(trips) {
 		} else {
 			return 0;
 		}
-
 	}
 
+	// Sort data by number of times a street occurs
 	let data = d3.entries(streetCount);
 	data.sort(compare);
 	data = data.slice(0, 15);
@@ -670,9 +667,6 @@ function DrawBarChart(trips) {
 		.attr('fill', (d, i) => colorMap[i % colorMap.length])
 		.on('mouseover', tipMouseover)
 		.on('mouseout', tipMouseout);
-
-
-
 }
 
 function DrawChordPlot(trips) {
@@ -749,8 +743,6 @@ function DrawChordPlot(trips) {
 		[1013, 990, 940, 6907]
 	];
 
-	console.log('test', testMatrix);
-
 	let res = d3.chord()
 		.padAngle(0.05)
 		.sortSubgroups(d3.descending)
@@ -783,4 +775,44 @@ function DrawChordPlot(trips) {
 		)
 		.style('fill', '#69b3a2')
 		.style('stroke', 'black');
+}
+
+function DrawSankeyPlot(trips) {
+
+	let data = {
+		'nodes': [],
+		'links': []
+	};
+
+	// Extract start and end street names for each trip
+	let streets = trips.map(t => {
+		if (t.streetnames.length >= 2) {
+			return {
+				start: t.streetnames[0],
+				end: t.streetnames[t.streetnames.length - 1]
+			};
+		}
+	});
+
+	console.log(streets);
+
+	// Identify unique streets to create groups
+	let uniqueStreets = [];
+	streets.map(s => {
+		uniqueStreets.push(s.start);
+		uniqueStreets.push(s.end);
+	});
+	uniqueStreets = [...new Set(uniqueStreets)];
+
+	console.log(uniqueStreets);
+
+	uniqueStreets.forEach((s, i) => {
+		data['nodes'].push({
+			node: i,
+			name: s
+		});
+	});
+
+	console.log(data)
+
 }

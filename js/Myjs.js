@@ -488,15 +488,14 @@ function DrawWordcloud(trips) {
 
 	// Initialize svg for word cloud
 	let margin = {top: 10, right: 10, bottom: 10, left:10},
-		width = $('.half-page').width() * 16 - margin.left,
-		height = $('.half-page').height() * 8;
+		width = $('.half-page').width() * 15 - margin.left - margin.right,
+		height = $('.half-page').height() * 5 - margin.top - margin.bottom;
 
 	let svg = d3.select('#word-cloud')
 		.append('svg')
         .append('g')
 		.attr('width', width + margin.left + margin.right)
 		.attr('height', height + margin.top + margin.bottom)
-		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 	// Create entries from street count dict
@@ -576,8 +575,10 @@ function DrawBarChart(trips) {
 
 	// Initialize svg for plot
 	let margin = {left: 30, top: 10, right: 10, bottom: 10},
-		width = $('.half-page').width()*16 - margin.left,
-		height = $('.half-page').height()*5 + 130;
+		width = $(".half-page").width() * 4.5,
+		height = $('.half-page').height() * 8;
+
+	console.log($(".half-page").width(), $('.half-page').height());
 
 	let svg = d3.select("#bar-chart")
 		.append('svg')
@@ -730,16 +731,16 @@ function DrawChordPlot(trips) {
 	console.log(matrix);
 
 	// Initialize svg for plot
-	let margin = {left: 40, top: 50, right: 20, bottom: 30},
-		width = $("#chord-plot").width() - margin.left - margin.right,
-		height = $('#chord-plot').height() - margin.bottom - margin.top;
+	let margin = {left: 30, top: 30, right: 30, bottom: 30},
+		width = $(".half-page").width()*5 - margin.left - margin.right,
+		height = $('.half-page').height()*7 - margin.bottom;
 
 	let svg = d3.select("#chord-plot")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))
 		.append('g')
-		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+margin.top+margin.bottom)/2 + ')');
+		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+65)/2 + ')');
 
 	let testMatrix = [
 		[11975, 5871, 8916, 2868],
@@ -767,8 +768,8 @@ function DrawChordPlot(trips) {
 		.style('fill', 'grey')
 		.style('stroke', 'black')
 		.attr('d', d3.arc()
-			.innerRadius(175)
-			.outerRadius(180)
+			.innerRadius(165)
+			.outerRadius(170)
 		);
 
 	svg.datum(res)
@@ -778,7 +779,7 @@ function DrawChordPlot(trips) {
 		.enter()
 		.append('path')
 		.attr('d', d3.ribbon()
-			.radius(175)
+			.radius(165)
 		)
 		.style('fill', '#69b3a2')
 		.style('stroke', 'black');

@@ -26,13 +26,6 @@ html {
 	padding-bottom: 5px;
 }
 
-#chord-plot {
-	width: 100%;
-	height: 50%;
-	position: fixed;
-	border-bottom: 1px solid black;
-}
-
 .scatter {
 	width: 30%;
 	height: 29.25%;
@@ -80,7 +73,7 @@ html {
 }
 
 .half-page {
-	width: 30%;
+	width: 100%;
 	height: 45%;
 	position: fixed;
 	outline: 1px solid black;
@@ -88,9 +81,9 @@ html {
 	padding-bottom: 5px;
 }
 
-#word-cloud {
+#word-cloud, #chord-plot {
 }
 
-#bar-chart {
+#bar-chart, #sankey-plot {
 	top: 55%;
 }

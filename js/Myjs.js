@@ -117,8 +117,7 @@ map.on('draw:created', function(e) {
 				DrawWordcloud(result);  // TODO: Wordcloud will not resize to fill div
 				DrawBarChart(result);
 
-				DrawChordPlot(result); // TODO: Flow matrix not correct for street data
-				DrawSankeyPlot(result);
+				DrawChordPlot(result); // TODO: Add mouseover actions: highlight and tooltip
 			});
 	}
 	
@@ -489,15 +488,17 @@ function DrawWordcloud(trips) {
 
 	// Initialize svg for word cloud
 	let margin = {top: 10, right: 10, bottom: 10, left:10},
-		width = $('.half-page').width() * 15 - margin.left - margin.right,
-		height = $('.half-page').height() * 5 - margin.top - margin.bottom;
+		width = $('.half-page').width() * 4 + 65,
+		height = $('.half-page').height() * 7 + 40;
+
+	console.log('word cloud: ', width, height);
 
 	let svg = d3.select('#word-cloud')
 		.append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
         .append('g')
-		.attr('width', width + margin.left + margin.right)
-		.attr('height', height + margin.top + margin.bottom)
-		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+		.attr('transform', 'translate(' + [width/2, height/2] + ')');
 
 	// Create d3 data array from street count dict
     let word_entries = d3.entries(streetCount);
@@ -506,11 +507,6 @@ function DrawWordcloud(trips) {
     let xScale = d3.scaleLinear()
         .domain(d3.extent(word_entries, d => d.value))
         .range([10, 100]);
-
-	let focus = svg.append('g')
-		.attr('width', width)
-		.attr('height', height)
-		.attr("transform", "translate(" + [width/2, height/2] + ")");
 
     let colorMap = ["#8b0707", "#dc3912", "#ff9900", "#109618",
 					"#0099c6", "#990099"];
@@ -535,7 +531,7 @@ function DrawWordcloud(trips) {
     d3.layout.cloud().stop();
 
     function draw(words) {
-        focus.selectAll('text')
+        svg.selectAll('text')
             .data(words)
             .enter()
             .append('text')

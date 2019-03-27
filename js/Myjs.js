@@ -702,7 +702,7 @@ function DrawChordPlot(trips) {
 		}
 	});
 
-	// Creat flow matrix between start and end streets
+	// Creat flow matrix between start and end streets using assigned indices
 	streets.forEach(d => {
 		const source = indexByName.get(d.start);
 		let row = matrix[source];
@@ -725,6 +725,7 @@ function DrawChordPlot(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+65)/2 + ')');
 
+	// Create chords from flow matrix
 	let chord = d3.chord()
 		.padAngle(.04)
 		.sortSubgroups(d3.descending)
@@ -732,28 +733,31 @@ function DrawChordPlot(trips) {
 
 	let chords = chord(Object.values(matrix));
 
+	// Draw outer arc segments for each street (group)
 	svg.datum(chords)
-		.append('g')
-		.selectAll('g')
-		.data(d => d.groups)
-		.enter()
-		.append('g')
-		.append('path')
-		.style('fill', 'grey')
-		.style('stroke', 'black')
-		.attr('d', d3.arc()
-			.innerRadius(165)
-			.outerRadius(170)
-		);
+        .append('g')
+        .selectAll('g')
+        .data(d => d.groups)
+        .enter()
+        .append('g')
+        .append('path')
+        .style('fill', 'gray')
+        .style('stroke', 'black')
+        .attr('d', d3.arc()
+            .innerRadius(165)
+            .outerRadius(170)
+        );
 
 	let color = d3.scaleOrdinal(d3.schemeCategory10);
 
+	// Draw ribbons between streets (groups)
 	svg.datum(chords)
 		.append('g')
 		.selectAll('path')
 		.data(d => d)
 		.enter()
 		.append('path')
+        .attr('class', 'chord')
 		.attr('d', d3.ribbon()
 			.radius(165)
 		)

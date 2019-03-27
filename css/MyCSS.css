@@ -87,3 +87,7 @@ html {
 #bar-chart, #sankey-plot {
 	top: 55%;
 }
+
+path.chord {
+	fill-opacity: 0.70;
+}

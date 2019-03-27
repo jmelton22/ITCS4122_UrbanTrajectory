@@ -714,10 +714,8 @@ function DrawChordPlot(trips) {
 
 		if (!row) {
 			row = matrix[source] = Array.from({length: n}).fill(0);
-			row[indexByName.get(d.end)]++;
-		} else {
-			row[indexByName.get(d.end)]++;
 		}
+		row[indexByName.get(d.end)]++
 	});
 
 	console.log('matrix: ', matrix);
@@ -734,21 +732,28 @@ function DrawChordPlot(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+65)/2 + ')');
 
-	let testMatrix = [
-		[11975, 5871, 8916, 2868],
-		[1951, 10048, 2060, 6171],
-		[8010, 16145, 8090, 8045],
-		[1013, 990, 940, 6907]
-	];
+	// let testMatrix = [
+	// 	[11975, 5871, 8916, 2868],
+	// 	[1951, 10048, 2060, 6171],
+	// 	[8010, 16145, 8090, 8045],
+	// 	[1013, 990, 940, 6907]
+	// ];
+	let testMatrix=[
+		[0,1,0,0],
+		[0,0,1,1],
+		[0,0,0,0]
+	]
 
 	let chord = d3.chord()
-		.padAngle(0.05)
+		.padAngle(.04)
 		.sortSubgroups(d3.descending)
-		(testMatrix);
+		.sortChords(d3.descending)
 
-	console.log('chords', chord);
+	let chords = chord(Object.values(matrix));
 
-	svg.datum(chord)
+	console.log('chords', chords);
+
+	svg.datum(chords)
 		.append('g')
 		.selectAll('g')
 		.data(d => d.groups)
@@ -764,7 +769,7 @@ function DrawChordPlot(trips) {
 
 	let color = d3.scaleOrdinal(d3.schemeCategory10);
 
-	svg.datum(chord)
+	svg.datum(chords)
 		.append('g')
 		.selectAll('path')
 		.data(d => d)

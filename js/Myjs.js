@@ -694,8 +694,6 @@ function DrawChordPlot(trips) {
 	});
 	uniqueStreets = [...new Set(uniqueStreets)];
 
-	console.log('unique sts:', uniqueStreets);
-
 	// Assign an index for each unique street
 	uniqueStreets.forEach(d => {
 		if (!indexByName[d]) {
@@ -703,9 +701,6 @@ function DrawChordPlot(trips) {
 			indexByName.set(d, n++);
 		}
 	});
-
-	console.log('index by name: ', indexByName);
-	console.log('name by index: ', nameByIndex);
 
 	// Creat flow matrix between start and end streets
 	streets.forEach(d => {
@@ -717,8 +712,6 @@ function DrawChordPlot(trips) {
 		}
 		row[indexByName.get(d.end)]++
 	});
-
-	console.log('matrix: ', matrix);
 
 	// Initialize svg for plot
 	let margin = {left: 30, top: 30, right: 30, bottom: 30},
@@ -732,26 +725,12 @@ function DrawChordPlot(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+65)/2 + ')');
 
-	// let testMatrix = [
-	// 	[11975, 5871, 8916, 2868],
-	// 	[1951, 10048, 2060, 6171],
-	// 	[8010, 16145, 8090, 8045],
-	// 	[1013, 990, 940, 6907]
-	// ];
-	let testMatrix=[
-		[0,1,0,0],
-		[0,0,1,1],
-		[0,0,0,0]
-	]
-
 	let chord = d3.chord()
 		.padAngle(.04)
 		.sortSubgroups(d3.descending)
-		.sortChords(d3.descending)
+		.sortChords(d3.descending);
 
 	let chords = chord(Object.values(matrix));
-
-	console.log('chords', chords);
 
 	svg.datum(chords)
 		.append('g')
@@ -780,40 +759,4 @@ function DrawChordPlot(trips) {
 		)
 		.style('fill', d => color(d.source.index))
 		.style('stroke', 'black');
-}
-
-function DrawSankeyPlot(trips) {
-
-	let data = {
-		'nodes': [],
-		'links': []
-	};
-
-	// Extract start and end street names for each trip
-	let streets = trips.map(t => {
-		if (t.streetnames.length >= 2) {
-			return {
-				start: t.streetnames[0],
-				end: t.streetnames[t.streetnames.length - 1]
-			};
-		}
-	});
-
-	// Identify unique streets to create groups
-	let uniqueStreets = [];
-	streets.map(s => {
-		uniqueStreets.push(s.start);
-		uniqueStreets.push(s.end);
-	});
-	uniqueStreets = [...new Set(uniqueStreets)];
-
-	uniqueStreets.forEach((s, i) => {
-		data['nodes'].push({
-			node: i,
-			name: s
-		});
-	});
-
-	// console.log(data)
-
 }

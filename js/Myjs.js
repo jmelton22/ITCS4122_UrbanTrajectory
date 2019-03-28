@@ -503,10 +503,12 @@ function DrawWordcloud(trips) {
 	// Create d3 data array from street count dict
     let word_entries = d3.entries(streetCount);
 
+    console.log('wordcloud data: ', word_entries);
+
     // Set the ranges for font size scale
     let xScale = d3.scaleLinear()
         .domain(d3.extent(word_entries, d => d.value))
-        .range([10, 100]);
+        .range([6, 28]);
 
     let colorMap = ["#8b0707", "#dc3912", "#ff9900", "#109618",
 					"#0099c6", "#990099"];
@@ -594,6 +596,9 @@ function DrawBarChart(trips) {
 	// Sort data by number of times a street occurs
 	let data = d3.entries(streetCount);
 	data.sort(compare);
+
+	console.log('bar chart data:', data);
+
 	data = data.slice(0, 15);
 
 	let xScale = d3.scaleBand()

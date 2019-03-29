@@ -114,8 +114,8 @@ map.on('draw:created', function(e) {
 				ScatterDistanceDuration(result);
 				ScatterSpeedDistance(result);
 
-				DrawWordcloud(result);  // TODO: Wordcloud will not resize to fill div
-				DrawBarChart(result);
+				DrawWordcloud(result);
+				DrawBarChart(result);  // TODO: Add axis labels
 
 				DrawChordPlot(result); // TODO: Add mouseover actions: highlight and tooltip
 			});
@@ -222,7 +222,7 @@ function ScatterSpeedDuration(trips) {
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
 
-	// Tooltip mouseover handler
+	// Tooltip mouseover handlers
 	let tipMouseover = t => {
 		let html = 'Duration: ' + (t.duration / 60)
 					+ "<br/>"
@@ -242,6 +242,7 @@ function ScatterSpeedDuration(trips) {
 			.style('opacity', 0)
 	};
 
+	// Add points to scatterplot
 	svg.selectAll('.dot')
 		.data(trips)
 		.enter().append('circle')
@@ -328,7 +329,7 @@ function ScatterDistanceDuration(trips) {
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
 
-	// Tooltip mouseover handler
+	// Tooltip mouseover handlers
 	let tipMouseover = t => {
 		let html = 'Duration: ' + (t.duration / 60)
 			+ "<br/>"
@@ -348,6 +349,7 @@ function ScatterDistanceDuration(trips) {
 			.style('opacity', 0)
 	};
 
+	// Add points to scatterplot
 	svg.selectAll('.dot')
 		.data(trips)
 		.enter().append('circle')
@@ -434,7 +436,7 @@ function ScatterSpeedDistance(trips) {
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
 
-	// Tooltip mouseover handler
+	// Tooltip mouseover handlers
 	let tipMouseover = t => {
 		let html = 'Distance: ' + (t.distance / 1000).toFixed(2)
 			+ "<br/>"
@@ -454,6 +456,7 @@ function ScatterSpeedDistance(trips) {
 			.style('opacity', 0)
 	};
 
+	// Add points to scatterplot
 	svg.selectAll('.dot')
 		.data(trips)
 		.enter().append('circle')
@@ -505,7 +508,7 @@ function DrawWordcloud(trips) {
 
     console.log('wordcloud data: ', word_entries);
 
-    // Set the ranges for font size scale
+    // Set the range for font size scale
     let xScale = d3.scaleLinear()
         .domain(d3.extent(word_entries, d => d.value))
         .range([6, 28]);
@@ -518,6 +521,7 @@ function DrawWordcloud(trips) {
 
     makeCloud();
 
+    // Layout the wordcloud
     function makeCloud() {
         d3.layout.cloud().size([width, height])
             .timeInterval(20)
@@ -532,6 +536,7 @@ function DrawWordcloud(trips) {
 
     d3.layout.cloud().stop();
 
+    // Draw words on wordcloud
     function draw(words) {
         svg.selectAll('text')
             .data(words)
@@ -580,6 +585,7 @@ function DrawBarChart(trips) {
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+	// Sort data by number of times a street occurs
 	function compare(a, b) {
 		let countA = a.value,
 			countB = b.value;
@@ -593,14 +599,15 @@ function DrawBarChart(trips) {
 		}
 	}
 
-	// Sort data by number of times a street occurs
 	let data = d3.entries(streetCount);
 	data.sort(compare);
 
 	console.log('bar chart data:', data);
 
+	// Slice top 15 streets to graph in barchart
 	data = data.slice(0, 15);
 
+	// Generate x and y axis scales
 	let xScale = d3.scaleBand()
 		.domain(data.map(d => d.key))
 		.rangeRound([0, width - margin.left])
@@ -625,13 +632,14 @@ function DrawBarChart(trips) {
 		.attr('class', 'axis')
 		.call(yAxis);
 
+	// Tooltip div
 	let tooltip = d3.select('body')
 		.append('g')
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 1.0);
 
-	// Tooltip mouseover handler
+	// Tooltip mouseover handlers
 	let tipMouseover = d => {
 		let html = 'Street: <strong>' + d.key + '</strong>'
 			+ '<br/>'
@@ -654,6 +662,7 @@ function DrawBarChart(trips) {
 	let colorMap = ["#8b0707", "#dc3912", "#ff9900", "#109618",
 		"#0099c6", "#990099"];
 
+	// Add bars to plot
 	svg.selectAll('.bar')
 		.data(data)
 		.enter()
@@ -703,7 +712,7 @@ function DrawChordPlot(trips) {
 		}
 	});
 
-	// Creat flow matrix between start and end streets using assigned indices
+	// Create flow matrix between start and end streets using assigned indices
 	streets.forEach(d => {
 		const source = indexByName.get(d.start);
 		let row = matrix[source];

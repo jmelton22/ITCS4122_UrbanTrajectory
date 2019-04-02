@@ -109,15 +109,15 @@ map.on('draw:created', function(e) {
 				console.log(result);		// Trip Info: avspeed, distance, duration, endtime, maxspeed, minspeed, starttime, streetnames, taxiid, tripid
 				DrawRS(result);
 
-				// Add visualization functions to right-side
+				// Page 1
 				ScatterSpeedDuration(result);
 				ScatterDistanceDuration(result);
 				ScatterSpeedDistance(result);
-
+				// Page 2
 				DrawWordcloud(result);
-				DrawBarChart(result);  // TODO: Add axis labels
-
-				DrawChordPlot(result); // TODO: Add mouseover actions: highlight and tooltip
+				DrawBarChart(result);
+				// Page 3
+				DrawChordPlot(result);
 			});
 	}
 	
@@ -504,8 +504,6 @@ function DrawWordcloud(trips) {
 	// Create d3 data array from street count dict
     let word_entries = d3.entries(streetCount);
 
-    console.log('wordcloud data: ', word_entries);
-
     // Set the range for font size scale
     let xScale = d3.scaleLinear()
         .domain(d3.extent(word_entries, d => d.value))
@@ -599,8 +597,6 @@ function DrawBarChart(trips) {
 
 	let data = d3.entries(streetCount);
 	data.sort(compare);
-
-	console.log('bar chart data:', data);
 
 	// Slice top 15 streets to graph in barchart
 	data = data.slice(0, 15);
@@ -698,7 +694,6 @@ function DrawBarChart(trips) {
 }
 
 function DrawChordPlot(trips) {
-
 	// Extract start and end street names for each trip
 	let streets = trips.map(t => {
 		if (t.streetnames.length >= 2) {
@@ -708,8 +703,6 @@ function DrawChordPlot(trips) {
 			};
 		}
 	});
-
-	console.log('streets: ', streets);
 
 	const indexByName = new Map;
 	const nameByIndex = new Map;
@@ -754,8 +747,6 @@ function DrawChordPlot(trips) {
 		.attr("height", (height + margin.top + margin.bottom))
 		.append('g')
 		.attr('transform', 'translate(' + ((width + 15)/2) + ',' + (height/2) + ')');
-
-	console.log(width, height);
 
 	// Main title
 	svg.append('text')
@@ -835,7 +826,7 @@ function DrawChordPlot(trips) {
 		.on('mouseover', arcTipMouseover)
 		.on('mouseout', arcTipMouseout);
 
-	// Tooltip div for arc segments
+	// Tooltip div for ribbon segments
 	let ribbonTooltip = d3.select('body')
 		.append('g')
 		.append('div')
@@ -877,5 +868,4 @@ function DrawChordPlot(trips) {
 		.style('stroke', 'black')
 		.on('mouseover', ribbonTipMouseover)
 		.on('mouseout', ribbonTipMouseout);
-
 }

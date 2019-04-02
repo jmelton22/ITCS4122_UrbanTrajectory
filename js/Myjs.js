@@ -427,7 +427,7 @@ function ScatterSpeedDistance(trips) {
 		.attr('font-weight', 'bold')
 		.attr('fill', 'black')
 		.style('text-anchor', 'middle')
-		.text('Avg Speed vs. Distance');
+		.text('Average Speed vs. Distance');
 
 	// Tooltip div
 	let tooltip = d3.select('body')

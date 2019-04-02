@@ -745,15 +745,38 @@ function DrawChordPlot(trips) {
 
 	// Initialize svg for plot
 	let margin = {left: 30, top: 30, right: 30, bottom: 30},
-		width = $(".half-page").width()*5 - margin.left - margin.right,
-		height = $('.half-page').height()*7 - margin.bottom;
+		width = $("#chord-plot").width()*5 - margin.left - margin.right,
+		height = $('#chord-plot').height()*7 - margin.bottom;
 
 	let svg = d3.select("#chord-plot")
 		.append('svg')
 		.attr("width", (width + margin.left + margin.right))
 		.attr("height", (height + margin.top + margin.bottom))
 		.append('g')
-		.attr('transform', 'translate(' + (width+margin.left)/2 + ',' + (height+65)/2 + ')');
+		.attr('transform', 'translate(' + ((width + 15)/2) + ',' + (height/2) + ')');
+
+	console.log(width, height);
+
+	// Main title
+	svg.append('text')
+		.attr('x', 0)
+		.attr('y', -margin.top - height/3 - 50)
+		.attr('dy', '0.35em')
+		.attr('font-size', 18)
+		.attr('font-weight', 'bold')
+		.attr('fill', 'black')
+		.style('text-anchor', 'middle')
+		.text('Chord Plot of Taxi Trips');
+
+	svg.append('text')
+		.attr('x', 0)
+		.attr('y', -margin.top - height/3 - 50)
+		.attr('dy', '1.5em')
+		.attr('font-size', 18)
+		.attr('font-weight', 'bold')
+		.attr('fill', 'black')
+		.style('text-anchor', 'middle')
+		.text('(Hover for trip details)');
 
 	// Create chords from flow matrix
 	let chord = d3.chord()
@@ -763,9 +786,9 @@ function DrawChordPlot(trips) {
 
 	let chords = chord(Object.values(matrix));
 
-	console.log(chords);
+	let color = d3.scaleOrdinal(d3.schemeCategory10);
 
-	// Tooltip div
+	// Tooltip div for arc segments
 	let arcTooltip = d3.select('body')
 		.append('g')
 		.append('div')
@@ -776,7 +799,7 @@ function DrawChordPlot(trips) {
 	let arcTipMouseover = d => {
 		let html = 'Street: ' + nameByIndex.get(d.index)
 			+ '<br/>'
-			+ 'Num Trips: ' + d.value;
+			+ 'Number of Trips: ' + d.value;
 
 		arcTooltip.html(html)
 			.style('left', (d3.event.pageX) + 'px')
@@ -792,6 +815,9 @@ function DrawChordPlot(trips) {
 			.style('opacity', 0)
 	};
 
+	const innerRadius = 200,
+		outerRadius = 215;
+
 	// Draw outer arc segments for each street (group)
 	svg.datum(chords)
         .append('g')
@@ -800,16 +826,41 @@ function DrawChordPlot(trips) {
         .enter()
         .append('g')
         .append('path')
-        .style('fill', 'gray')
+        .style('fill', d => color(d.index))
         .style('stroke', 'black')
         .attr('d', d3.arc()
-            .innerRadius(160)
-            .outerRadius(170)
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
         )
 		.on('mouseover', arcTipMouseover)
 		.on('mouseout', arcTipMouseout);
 
-	let color = d3.scaleOrdinal(d3.schemeCategory10);
+	// Tooltip div for arc segments
+	let ribbonTooltip = d3.select('body')
+		.append('g')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 1.0);
+
+	// Tooltip mouseover handlers
+	let ribbonTipMouseover = d => {
+		let html = nameByIndex.get(d.source.index)
+			+ ' &#8594 '
+			+ nameByIndex.get(d.target.index);
+
+		ribbonTooltip.html(html)
+			.style('left', (d3.event.pageX) + 'px')
+			.style('top', (d3.event.pageY) + 'px')
+			.transition()
+			.duration(200)
+			.style('opacity', 0.95)
+	};
+
+	let ribbonTipMouseout = () => {
+		ribbonTooltip.transition()
+			.duration(300)
+			.style('opacity', 0)
+	};
 
 	// Draw ribbons between streets (groups)
 	svg.datum(chords)
@@ -820,8 +871,11 @@ function DrawChordPlot(trips) {
 		.append('path')
         .attr('class', 'chord')
 		.attr('d', d3.ribbon()
-			.radius(160)
+			.radius(innerRadius)
 		)
 		.style('fill', d => color(d.source.index))
-		.style('stroke', 'black');
+		.style('stroke', 'black')
+		.on('mouseover', ribbonTipMouseover)
+		.on('mouseout', ribbonTipMouseout);
+
 }

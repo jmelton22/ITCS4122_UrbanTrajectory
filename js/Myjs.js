@@ -689,9 +689,9 @@ function DrawBarChart(trips) {
 		.append('rect')
 		.attr('class', 'bar')
 		.attr('x', d => xScale(d.key))
-		.attr('y', d => (yScale(d.value) - margin.left + 20))
+		.attr('y', d => (yScale(d.value) - margin.left + 30))
 		.attr('width', xScale.bandwidth())
-		.attr('height', d => (height - 20 - yScale(d.value)))
+		.attr('height', d => (height - 30 - yScale(d.value)))
 		.attr('fill', (d, i) => colorMap[i % colorMap.length])
 		.on('mouseover', tipMouseover)
 		.on('mouseout', tipMouseout);
@@ -763,6 +763,35 @@ function DrawChordPlot(trips) {
 
 	let chords = chord(Object.values(matrix));
 
+	console.log(chords);
+
+	// Tooltip div
+	let arcTooltip = d3.select('body')
+		.append('g')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 1.0);
+
+	// Tooltip mouseover handlers
+	let arcTipMouseover = d => {
+		let html = 'Street: ' + nameByIndex.get(d.index)
+			+ '<br/>'
+			+ 'Num Trips: ' + d.value;
+
+		arcTooltip.html(html)
+			.style('left', (d3.event.pageX) + 'px')
+			.style('top', (d3.event.pageY) + 'px')
+			.transition()
+			.duration(200)
+			.style('opacity', 0.95)
+	};
+
+	let arcTipMouseout = () => {
+		arcTooltip.transition()
+			.duration(300)
+			.style('opacity', 0)
+	};
+
 	// Draw outer arc segments for each street (group)
 	svg.datum(chords)
         .append('g')
@@ -774,9 +803,11 @@ function DrawChordPlot(trips) {
         .style('fill', 'gray')
         .style('stroke', 'black')
         .attr('d', d3.arc()
-            .innerRadius(165)
+            .innerRadius(160)
             .outerRadius(170)
-        );
+        )
+		.on('mouseover', arcTipMouseover)
+		.on('mouseout', arcTipMouseout);
 
 	let color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -789,7 +820,7 @@ function DrawChordPlot(trips) {
 		.append('path')
         .attr('class', 'chord')
 		.attr('d', d3.ribbon()
-			.radius(165)
+			.radius(160)
 		)
 		.style('fill', d => color(d.source.index))
 		.style('stroke', 'black');

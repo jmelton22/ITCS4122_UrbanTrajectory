@@ -494,8 +494,6 @@ function DrawWordcloud(trips) {
 		width = $('.half-page').width() * 4 + 65,
 		height = $('.half-page').height() * 7 + 40;
 
-	console.log('word cloud: ', width, height);
-
 	let svg = d3.select('#word-cloud')
 		.append('svg')
         .attr('width', width + margin.left + margin.right)
@@ -575,15 +573,15 @@ function DrawBarChart(trips) {
 
 	// Initialize svg for plot
 	let margin = {left: 30, top: 10, right: 10, bottom: 10},
-		width = $(".half-page").width() * 4.5,
-		height = $('.half-page').height() * 8;
+		width = $(".half-page").width() * 4.5 - 20,
+		height = $('.half-page').height() * 8 - 30;
 
 	let svg = d3.select("#bar-chart")
 		.append('svg')
 		.attr("width", width)
 		.attr("height", height)
 		.append('g')
-		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+		.attr('transform', 'translate(' + (margin.left + 10) + ',' + (margin.top + 10) + ')');
 
 	// Sort data by number of times a street occurs
 	function compare(a, b) {
@@ -632,6 +630,28 @@ function DrawBarChart(trips) {
 		.attr('class', 'axis')
 		.call(yAxis);
 
+    // y axis label
+    svg.append('text')
+        .attr('class', 'label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -(height / 2.5))
+        .attr('y', -(margin.left))
+        .attr('font-size', 14)
+        .attr('font-style', 'italic')
+        .style('text-anchor', 'end')
+        .text('# Occurrences');
+
+    // Main title
+    svg.append('text')
+        .attr('x', width / 2)
+        .attr('y', -margin.top / 2)
+        .attr('dy', '.35em')
+        .attr('font-size', 18)
+        .attr('font-weight', 'bold')
+        .attr('fill', 'black')
+        .style('text-anchor', 'middle')
+        .text('Top 15 Most Frequent Streets');
+
 	// Tooltip div
 	let tooltip = d3.select('body')
 		.append('g')
@@ -669,9 +689,9 @@ function DrawBarChart(trips) {
 		.append('rect')
 		.attr('class', 'bar')
 		.attr('x', d => xScale(d.key))
-		.attr('y', d => (yScale(d.value) - margin.left + 30))
+		.attr('y', d => (yScale(d.value) - margin.left + 20))
 		.attr('width', xScale.bandwidth())
-		.attr('height', d => (height - 30 - yScale(d.value)))
+		.attr('height', d => (height - 20 - yScale(d.value)))
 		.attr('fill', (d, i) => colorMap[i % colorMap.length])
 		.on('mouseover', tipMouseover)
 		.on('mouseout', tipMouseout);
